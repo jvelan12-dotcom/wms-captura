@@ -10,7 +10,6 @@
   <link rel="manifest" href="manifest.json">
   <title>WMS Captura Inteligente</title>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-  <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --bg: #0a0f1a; --panel: #111827; --border: #1e2d45; --accent: #00d4aa; --accent2: #0091ff; --danger: #ff4757; --text: #e2e8f0; --muted: #64748b; }
@@ -38,25 +37,21 @@
     .step-num { min-width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .step-text { font-size: 13px; line-height: 1.4; }
     .step-text strong { color: var(--accent); }
-    .tip-box { background: rgba(255,184,0,0.08); border: 1px solid rgba(255,184,0,0.25); border-radius: 12px; padding: 12px 14px; font-size: 12px; color: rgba(255,184,0,0.9); display: flex; gap: 8px; line-height: 1.5; }
     .btn-camera { width: 100%; padding: 18px; border: none; border-radius: 16px; cursor: pointer; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 30px rgba(0,212,170,0.3); }
     .btn-camera:active { transform: scale(0.97); }
     .preview-img-wrap { position: relative; border-radius: 14px; overflow: hidden; background: #000; }
-    .preview-img { width: 100%; max-height: 40vh; object-fit: contain; display: block; }
+    .preview-img { width: 100%; max-height: 45vh; object-fit: contain; display: block; }
     .preview-badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent); color: var(--accent); font-size: 9px; letter-spacing: 1px; padding: 4px 10px; border-radius: 4px; }
     .btn-row { display: flex; gap: 10px; }
     .btn-main { flex: 1; padding: 15px; border: none; border-radius: 14px; cursor: pointer; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-main:active { transform: scale(0.97); }
     .btn-main:disabled { opacity: .4; cursor: not-allowed; }
     .btn-sec { padding: 15px 20px; border: 1px solid var(--border); border-radius: 14px; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; }
-    .load-box { text-align: center; padding: 30px 20px; }
+    .load-box { text-align: center; padding: 40px 20px; }
     .spinner { width: 50px; height: 50px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
     .load-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
     .load-step { font-size: 12px; color: var(--muted); }
-    .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 12px; overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.3s ease; width: 0%; }
     .err-box { background: rgba(255,71,87,0.08); border: 1px solid rgba(255,71,87,0.25); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: rgba(255,71,87,0.9); display: flex; gap: 10px; align-items: flex-start; }
-    .raw-text-box { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 11px; color: var(--muted); font-family: monospace; line-height: 1.6; max-height: 80px; overflow-y: auto; }
     .result-header { background: linear-gradient(135deg, rgba(0,212,170,0.1), rgba(0,145,255,0.1)); border: 1px solid rgba(0,212,170,0.25); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; }
     .result-icon { font-size: 32px; }
     .result-title { font-size: 15px; font-weight: 700; color: var(--accent); }
@@ -65,9 +60,12 @@
     .field-card.hi { border-color: var(--accent); background: rgba(0,212,170,0.04); }
     .field-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .field-lbl { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+    .field-conf { font-size: 10px; color: var(--accent); }
     .field-val { font-size: 26px; font-weight: 700; letter-spacing: 2px; }
-    .field-edit { width: 100%; background: transparent; border: none; border-top: 1px solid var(--border); color: var(--text); font-size: 20px; font-weight: 700; letter-spacing: 2px; outline: none; margin-top: 8px; padding-top: 8px; font-family: inherit; }
+    .field-edit { width: 100%; background: transparent; border: none; border-top: 1px solid var(--border); color: var(--text); font-size: 18px; font-weight: 700; letter-spacing: 2px; outline: none; margin-top: 8px; padding-top: 8px; font-family: inherit; }
     .field-hint { font-size: 10px; color: var(--muted); margin-top: 4px; }
+    .conf-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+    .conf-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.9s ease; }
     .bc-section { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
     .bc-section-hdr { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
     .bc-section-hdr span { color: var(--accent); font-weight: 600; }
@@ -103,15 +101,14 @@
   <div class="capture-hero">
     <div class="hero-icon">📷</div>
     <div class="hero-title">Captura Inteligente</div>
-    <div class="hero-sub">Fotografía la etiqueta y el sistema extrae automáticamente el lote y la fecha de vencimiento</div>
+    <div class="hero-sub">Fotografía la etiqueta del producto y la IA extrae automáticamente el lote y la fecha de vencimiento</div>
   </div>
   <div class="steps-card">
     <div class="steps-title">¿Cómo funciona?</div>
-    <div class="step-item"><div class="step-num">1</div><div class="step-text">Toma foto clara y cercana de la etiqueta</div></div>
-    <div class="step-item"><div class="step-num">2</div><div class="step-text">El sistema extrae el <strong>Lote</strong> (últimos 10 dígitos) y <strong>Fecha Venc.</strong> (AAAAMMDD)</div></div>
+    <div class="step-item"><div class="step-num">1</div><div class="step-text">Toma foto de la etiqueta al momento de la recepción</div></div>
+    <div class="step-item"><div class="step-num">2</div><div class="step-text">La IA extrae el <strong>Lote</strong> (últimos 10 dígitos) y <strong>Fecha Venc.</strong> (AAAAMMDD)</div></div>
     <div class="step-item"><div class="step-num">3</div><div class="step-text">Escanea los códigos generados directamente en <strong>Blue Yonder</strong></div></div>
   </div>
-  <div class="tip-box"><span>💡</span><span>Para mejores resultados: foto cercana, buena iluminación, etiqueta centrada y sin reflejo</span></div>
   <button class="btn-camera" onclick="openCamera()"><span style="font-size:22px">📷</span> Tomar Foto de Etiqueta</button>
 </div>
 <div class="screen" id="screenPreview">
@@ -121,17 +118,12 @@
   </div>
   <div id="stateReady">
     <div class="btn-row">
-      <button class="btn-main" onclick="analyzeImage()">🔍 Leer Etiqueta</button>
+      <button class="btn-main" onclick="analyzeImage()">🔍 Analizar con IA</button>
       <button class="btn-sec" onclick="goHome()">✕</button>
     </div>
   </div>
   <div id="stateLoading" style="display:none">
-    <div class="load-box">
-      <div class="spinner"></div>
-      <div class="load-title">Leyendo etiqueta...</div>
-      <div class="load-step" id="loadStep">Iniciando reconocimiento de texto...</div>
-      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    </div>
+    <div class="load-box"><div class="spinner"></div><div class="load-title">Analizando etiqueta...</div><div class="load-step" id="loadStep">Procesando imagen...</div></div>
   </div>
   <div id="stateError" style="display:none">
     <div class="err-box"><span>⚠️</span><span id="errMsg"></span></div>
@@ -144,23 +136,21 @@
 <div class="screen" id="screenResult">
   <div class="result-header">
     <div class="result-icon">✅</div>
-    <div><div class="result-title">Datos extraídos correctamente</div><div class="result-sub" id="resultSub">Verifica y corrige si es necesario</div></div>
+    <div><div class="result-title">Datos extraídos correctamente</div><div class="result-sub" id="resultProduct">—</div></div>
   </div>
   <div class="field-card hi">
-    <div class="field-top"><div class="field-lbl">🏷 Número de Lote</div></div>
+    <div class="field-top"><div class="field-lbl">🏷 Número de Lote</div><div class="field-conf" id="confLot"></div></div>
     <div class="field-val" id="valLot">—</div>
     <input class="field-edit" id="editLot" maxlength="10" placeholder="Corregir si es necesario" oninput="this.value=this.value.replace(/\D/g,'').slice(-10);updateBarcodes()">
-    <div class="field-hint">Solo dígitos · últimos 10 · editable</div>
+    <div class="field-hint">Solo dígitos · máx 10 · editable</div>
+    <div class="conf-bar"><div class="conf-fill" id="barLot" style="width:0%"></div></div>
   </div>
   <div class="field-card hi">
-    <div class="field-top"><div class="field-lbl">📅 Fecha Vencimiento</div></div>
+    <div class="field-top"><div class="field-lbl">📅 Fecha Vencimiento</div><div class="field-conf" id="confExp"></div></div>
     <div class="field-val" id="valExp">—</div>
     <input class="field-edit" id="editExp" maxlength="8" placeholder="AAAAMMDD" oninput="this.value=this.value.replace(/\D/g,'').slice(0,8);updateBarcodes()">
     <div class="field-hint">Formato AAAAMMDD · editable</div>
-  </div>
-  <div id="rawTextWrap" style="display:none">
-    <div style="font-size:10px;color:var(--muted);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase;">Texto detectado en imagen</div>
-    <div class="raw-text-box" id="rawText"></div>
+    <div class="conf-bar"><div class="conf-fill" id="barExp" style="width:0%"></div></div>
   </div>
   <div class="bc-section">
     <div class="bc-section-hdr"><span>▮</span> Escanear en Blue Yonder</div>
@@ -205,6 +195,10 @@
     document.getElementById('stateLoading').style.display=s==='loading'?'block':'none';
     document.getElementById('stateError').style.display=s==='error'?'block':'none';
   }
+  const STEPS=['Procesando imagen...','Identificando texto en etiqueta...','Extrayendo lote y vencimiento...','Validando datos...'];
+  let stepTimer=null;
+  function startSteps(){let i=0;document.getElementById('loadStep').textContent=STEPS[0];stepTimer=setInterval(()=>{i=(i+1)%STEPS.length;document.getElementById('loadStep').textContent=STEPS[i];},1300);}
+  function stopSteps(){clearInterval(stepTimer);}
   function monthToNum(m){const ms={jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12',ene:'01',abr:'04',ago:'08',dic:'12'};return ms[String(m).toLowerCase()]||'00';}
   function parseDate(raw){
     if(!raw)return'';
@@ -216,38 +210,6 @@
     if(parts.length===3){const[a,b,c]=parts;if(a.length===4)return`${a}${b.padStart(2,'0')}${c.padStart(2,'0')}`;if(c.length===4)return`${c}${b.padStart(2,'0')}${a.padStart(2,'0')}`;}
     return clean.slice(0,8);
   }
-  function extractFromText(text) {
-    const lines = text.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
-    let lot='', exp='';
-    for(const line of lines){
-      // Buscar fecha: patron VEN/EXP + fecha con mes en texto
-      const dateMatch = line.match(/(?:VEN|EXP|VENCE|BB|BEST|USE|CAD|FV|FECHA)[:\s]*(\d{1,2}[\s\-\/]*[A-Za-z]{3}[\s\-\/]*\d{2,4})/i);
-      if(dateMatch && !exp) exp = parseDate(dateMatch[1]);
-      // Fecha formato numerico
-      const dateNum = line.match(/(?:VEN|EXP|VENCE|BB|CAD)[:\s]*(\d{2}[\s\-\/]\d{2}[\s\-\/]\d{2,4})/i);
-      if(dateNum && !exp) exp = parseDate(dateNum[1]);
-      // Fecha sola en la linea: 27 MAY 26
-      const dateAlone = line.match(/^(\d{1,2}\s+[A-Za-z]{3}\s+\d{2,4})/);
-      if(dateAlone && !exp) exp = parseDate(dateAlone[1]);
-      // Buscar lote: patron LOT/LOTE/BATCH/L: seguido de alfanumerico
-      const lotMatch = line.match(/(?:LOT|LOTE|BATCH|L[:\s#])\s*([A-Z0-9]{5,20})/i);
-      if(lotMatch && !lot) lot = lotMatch[1].replace(/\D/g,'').slice(-10);
-      // Lote: linea que empieza con L seguido de letras y muchos digitos
-      const lotLine = line.match(/^L[A-Z]\d{8,}/i);
-      if(lotLine && !lot) lot = line.replace(/\D/g,'').slice(-10);
-    }
-    // Si no encontramos con prefijos, buscar patrones directos en todo el texto
-    if(!exp){
-      const m=text.match(/(\d{1,2})\s+([A-Za-z]{3})\s+(\d{2,4})/);
-      if(m) exp=parseDate(`${m[1]} ${m[2]} ${m[3]}`);
-    }
-    if(!lot){
-      // Buscar secuencia larga de digitos (10+)
-      const nums=text.match(/\d{10,}/g);
-      if(nums) lot=nums[0].slice(-10);
-    }
-    return {lot, exp};
-  }
   function renderBarcode(svgId,value){if(!value)return;try{JsBarcode('#'+svgId,value,{format:'CODE128',lineColor:'#000',width:2.5,height:80,displayValue:false,margin:10});}catch(e){}}
   function updateBarcodes(){
     const lot=document.getElementById('editLot').value;
@@ -257,6 +219,38 @@
   }
   async function analyzeImage(){
     if(!currentImage)return;
-    setPreviewState('loading');
-    document.getElementById('loadStep').textContent='Iniciando reconocimiento de texto...';
-    document.getElem
+    setPreviewState('loading');startSteps();
+    try{
+      const base64=currentImage.split(',')[1];
+      const mimeType=currentImage.split(';')[0].split(':')[1];
+      const res=await fetch('/api/analyze',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({image:base64,mimeType:mimeType})
+      });
+      stopSteps();
+      if(!res.ok)throw new Error('Error del servidor: '+res.status);
+      const parsed=await res.json();
+      if(parsed.error)throw new Error(parsed.error);
+      const lot=parsed.lote_digitos?String(parsed.lote_digitos).replace(/\D/g,'').slice(-10):'';
+      const exp=parsed.fecha_YYYYMMDD?parseDate(parsed.fecha_YYYYMMDD):parseDate(parsed.fecha_raw);
+      if(!lot&&!exp)throw new Error('No se encontraron datos. Intenta con foto más clara y cercana a la etiqueta.');
+      document.getElementById('resultProduct').textContent=parsed.producto||'Producto detectado';
+      document.getElementById('valLot').textContent=lot||'—';
+      document.getElementById('valExp').textContent=exp||'—';
+      document.getElementById('editLot').value=lot||'';
+      document.getElementById('editExp').value=exp||'';
+      document.getElementById('confLot').textContent=(parsed.confianza_lote||0)+'% confianza';
+      document.getElementById('confExp').textContent=(parsed.confianza_fecha||0)+'% confianza';
+      showScreen('screenResult');
+      setTimeout(()=>{
+        document.getElementById('barLot').style.width=(parsed.confianza_lote||0)+'%';
+        document.getElementById('barExp').style.width=(parsed.confianza_fecha||0)+'%';
+        if(lot){renderBarcode('bcLot',lot);document.getElementById('bcLotNum').textContent=lot;}
+        if(exp){renderBarcode('bcExp',exp);document.getElementById('bcExpNum').textContent=exp;}
+      },150);
+    }catch(err){stopSteps();setPreviewState('error');document.getElementById('errMsg').textContent=err.message;}
+  }
+</script>
+</body>
+</html>
