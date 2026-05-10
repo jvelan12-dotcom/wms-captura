@@ -1,15 +1,21 @@
-const CACHE = 'wms-captura-v1';
-const ASSETS = ['/', '/index.html', '/manifest.json'];
+const CACHE = 'wms-v2';
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', e => {
-  if (e.request.url.includes('anthropic.com')) { e.respondWith(fetch(e.request)); return; }
-  e.respondWith(caches.match(e.request).then(cached => cached || fetch(e.request)));
+  if (e.request.url.includes('/api/')) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
+  e.respondWith(fetch(e.request));
 });
