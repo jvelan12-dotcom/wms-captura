@@ -13,11 +13,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0a0f1a; --panel: #111827; --border: #1e2d45;
-      --accent: #00d4aa; --accent2: #0091ff;
-      --danger: #ff4757; --text: #e2e8f0; --muted: #64748b;
-    }
+    :root { --bg: #0a0f1a; --panel: #111827; --border: #1e2d45; --accent: #00d4aa; --accent2: #0091ff; --danger: #ff4757; --text: #e2e8f0; --muted: #64748b; }
     html, body { height: 100%; overflow: hidden; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; }
     .hdr { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top)); background: rgba(10,15,26,0.98); border-bottom: 1px solid var(--border); }
@@ -67,6 +63,8 @@
     .field-lbl { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
     .field-conf { font-size: 10px; color: var(--accent); }
     .field-val { font-size: 26px; font-weight: 700; letter-spacing: 2px; }
+    .field-edit { width: 100%; background: transparent; border: none; border-top: 1px solid var(--border); color: var(--text); font-size: 18px; font-weight: 700; letter-spacing: 2px; outline: none; margin-top: 8px; padding-top: 8px; font-family: inherit; }
+    .field-hint { font-size: 10px; color: var(--muted); margin-top: 4px; }
     .conf-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 10px; overflow: hidden; }
     .conf-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.9s ease; }
     .bc-section { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
@@ -95,10 +93,7 @@
 <header class="hdr">
   <div class="logo">
     <div class="logo-box">📦</div>
-    <div>
-      <div class="logo-name">WMS Captura</div>
-      <div class="logo-sub">Lote · Fecha Vencimiento</div>
-    </div>
+    <div><div class="logo-name">WMS Captura</div><div class="logo-sub">Lote · Fecha Vencimiento</div></div>
   </div>
   <div class="pill"><div class="dot"></div> ACTIVO</div>
 </header>
@@ -111,9 +106,9 @@
   </div>
   <div class="steps-card">
     <div class="steps-title">¿Cómo funciona?</div>
-    <div class="step-item"><div class="step-num">1</div><div class="step-text">Toma foto de la etiqueta del producto al momento de la recepción</div></div>
+    <div class="step-item"><div class="step-num">1</div><div class="step-text">Toma foto de la etiqueta al momento de la recepción</div></div>
     <div class="step-item"><div class="step-num">2</div><div class="step-text">La IA extrae el <strong>Lote</strong> (últimos 10 dígitos) y <strong>Fecha Venc.</strong> (AAAAMMDD)</div></div>
-    <div class="step-item"><div class="step-num">3</div><div class="step-text">Escanea los códigos de barra generados directamente en <strong>Blue Yonder</strong></div></div>
+    <div class="step-item"><div class="step-num">3</div><div class="step-text">Escanea los códigos generados directamente en <strong>Blue Yonder</strong></div></div>
   </div>
   <button class="btn-camera" onclick="openCamera()"><span style="font-size:22px">📷</span> Tomar Foto de Etiqueta</button>
 </div>
@@ -129,11 +124,7 @@
     </div>
   </div>
   <div id="stateLoading" style="display:none">
-    <div class="load-box">
-      <div class="spinner"></div>
-      <div class="load-title">Analizando etiqueta...</div>
-      <div class="load-step" id="loadStep">Procesando imagen...</div>
-    </div>
+    <div class="load-box"><div class="spinner"></div><div class="load-title">Analizando etiqueta...</div><div class="load-step" id="loadStep">Procesando imagen...</div></div>
   </div>
   <div id="stateError" style="display:none">
     <div class="err-box"><span>⚠️</span><span id="errMsg"></span></div>
@@ -146,25 +137,20 @@
 <div class="screen" id="screenResult">
   <div class="result-header">
     <div class="result-icon">✅</div>
-    <div>
-      <div class="result-title">Datos extraídos correctamente</div>
-      <div class="result-sub" id="resultProduct">—</div>
-    </div>
+    <div><div class="result-title">Datos extraídos correctamente</div><div class="result-sub" id="resultProduct">—</div></div>
   </div>
   <div class="field-card hi">
-    <div class="field-top">
-      <div class="field-lbl">🏷 Número de Lote</div>
-      <div class="field-conf" id="confLot"></div>
-    </div>
+    <div class="field-top"><div class="field-lbl">🏷 Número de Lote</div><div class="field-conf" id="confLot"></div></div>
     <div class="field-val" id="valLot">—</div>
+    <input class="field-edit" id="editLot" maxlength="10" placeholder="Corregir si es necesario" oninput="this.value=this.value.replace(/\D/g,'').slice(-10);updateBarcodes()">
+    <div class="field-hint">Solo dígitos · máx 10 · editale si la IA se equivocó</div>
     <div class="conf-bar"><div class="conf-fill" id="barLot" style="width:0%"></div></div>
   </div>
   <div class="field-card hi">
-    <div class="field-top">
-      <div class="field-lbl">📅 Fecha Vencimiento</div>
-      <div class="field-conf" id="confExp"></div>
-    </div>
+    <div class="field-top"><div class="field-lbl">📅 Fecha Vencimiento</div><div class="field-conf" id="confExp"></div></div>
     <div class="field-val" id="valExp">—</div>
+    <input class="field-edit" id="editExp" maxlength="8" placeholder="AAAAMMDD" oninput="this.value=this.value.replace(/\D/g,'').slice(0,8);updateBarcodes()">
+    <div class="field-hint">Formato AAAAMMDD · editable si la IA se equivocó</div>
     <div class="conf-bar"><div class="conf-fill" id="barExp" style="width:0%"></div></div>
   </div>
   <div class="bc-section">
@@ -180,74 +166,94 @@
       <div class="bc-num" id="bcExpNum"></div>
     </div>
   </div>
-  <div class="scan-tip">
-    <span>💡</span>
-    <span>En Blue Yonder, cuando pida el <strong>Lote</strong> escanea el primer código. Cuando pida la <strong>Fecha de Vencimiento</strong> escanea el segundo.</span>
-  </div>
+  <div class="scan-tip"><span>💡</span><span>En Blue Yonder, cuando pida el <strong>Lote</strong> escanea el primer código. Cuando pida la <strong>Fecha de Vencimiento</strong> escanea el segundo.</span></div>
   <button class="btn-new" onclick="goHome()">📷 Nueva captura</button>
 </div>
 <div class="install-banner hidden" id="installBanner">
   <div style="font-size:28px">📦</div>
-  <div class="install-txt">
-    <strong>Instalar como App</strong>
-    <span>Acceso rápido sin abrir el navegador</span>
-  </div>
+  <div class="install-txt"><strong>Instalar como App</strong><span>Acceso rápido sin abrir el navegador</span></div>
   <button class="btn-install" id="btnInstall">Instalar</button>
   <button class="btn-dismiss" onclick="dismissInstall()">✕</button>
 </div>
 <script>
-  if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(()=>{}); }
-  let deferredPrompt = null;
-  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; document.getElementById('installBanner').classList.remove('hidden'); });
-  document.getElementById('btnInstall').addEventListener('click', async () => { if (!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; dismissInstall(); });
-  function dismissInstall() { document.getElementById('installBanner').classList.add('hidden'); }
-  function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
-  function goHome() { currentImage = null; showScreen('screenHome'); }
-  let currentImage = null;
-  function openCamera() { document.getElementById('cameraInput').click(); }
-  document.getElementById('cameraInput').addEventListener('change', function(e) {
-    const file = e.target.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => { currentImage = ev.target.result; document.getElementById('previewImg').src = currentImage; setPreviewState('ready'); showScreen('screenPreview'); };
-    reader.readAsDataURL(file); this.value = '';
+  const GEMINI_KEY = 'AIzaSyCwylazavf3ikSFaIfib1IOulhRPYwRZpg';
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+  let deferredPrompt=null;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').classList.remove('hidden');});
+  document.getElementById('btnInstall').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;dismissInstall();});
+  function dismissInstall(){document.getElementById('installBanner').classList.add('hidden');}
+  function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+  function goHome(){currentImage=null;showScreen('screenHome');}
+  let currentImage=null;
+  function openCamera(){document.getElementById('cameraInput').click();}
+  document.getElementById('cameraInput').addEventListener('change',function(e){
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{currentImage=ev.target.result;document.getElementById('previewImg').src=currentImage;setPreviewState('ready');showScreen('screenPreview');};
+    reader.readAsDataURL(file);this.value='';
   });
-  function setPreviewState(s) { document.getElementById('stateReady').style.display = s==='ready'?'block':'none'; document.getElementById('stateLoading').style.display = s==='loading'?'block':'none'; document.getElementById('stateError').style.display = s==='error'?'block':'none'; }
-  const STEPS = ['Procesando imagen...','Identificando texto en etiqueta...','Extrayendo lote y vencimiento...','Validando datos...'];
-  let stepTimer = null;
-  function startSteps() { let i=0; document.getElementById('loadStep').textContent=STEPS[0]; stepTimer=setInterval(()=>{ i=(i+1)%STEPS.length; document.getElementById('loadStep').textContent=STEPS[i]; },1300); }
-  function stopSteps() { clearInterval(stepTimer); }
-  function formatLot(raw) { if(!raw) return ''; return String(raw).replace(/\D/g,'').slice(-10); }
-  function formatDate(raw) { if(!raw) return ''; const clean=String(raw).replace(/\D/g,''); if(clean.length===8) return clean; const parts=String(raw).split(/[-\/\.]/); if(parts.length===3){const[a,b,c]=parts; if(a.length===4) return `${a}${b.padStart(2,'0')}${c.padStart(2,'0')}`; if(c.length===4) return `${c}${b.padStart(2,'0')}${a.padStart(2,'0')}`;} return clean.slice(0,8); }
-  function renderBarcode(svgId, value) { try { JsBarcode('#'+svgId, value, {format:'CODE128',lineColor:'#000',width:2.5,height:70,displayValue:false,margin:10}); } catch(e){} }
-  async function analyzeImage() {
-    if (!currentImage) return;
-    setPreviewState('loading'); startSteps();
-    try {
-      const base64 = currentImage.split(',')[1];
-      const mediaType = currentImage.split(';')[0].split(':')[1];
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800, messages:[{ role:'user', content:[
-          {type:'image', source:{type:'base64', media_type:mediaType, data:base64}},
-          {type:'text', text:'Analiza esta etiqueta de producto para un sistema WMS. Responde ÚNICAMENTE en JSON válido sin texto extra ni markdown:\n{\n  "lote": "todos los dígitos numéricos del campo lote/lot/batch. Solo dígitos sin letras.",\n  "fecha_vencimiento": "fecha de vencimiento en formato YYYYMMDD exacto 8 dígitos. Ejemplo: 20261231",\n  "producto": "nombre corto del producto",\n  "confianza_lote": número entero 0-100,\n  "confianza_vencimiento": número entero 0-100\n}\nSi no encuentras un campo usa null. NO inventes datos.'}
-        ]}]})
+  function setPreviewState(s){
+    document.getElementById('stateReady').style.display=s==='ready'?'block':'none';
+    document.getElementById('stateLoading').style.display=s==='loading'?'block':'none';
+    document.getElementById('stateError').style.display=s==='error'?'block':'none';
+  }
+  const STEPS=['Procesando imagen...','Identificando texto en etiqueta...','Extrayendo lote y vencimiento...','Validando datos...'];
+  let stepTimer=null;
+  function startSteps(){let i=0;document.getElementById('loadStep').textContent=STEPS[0];stepTimer=setInterval(()=>{i=(i+1)%STEPS.length;document.getElementById('loadStep').textContent=STEPS[i];},1300);}
+  function stopSteps(){clearInterval(stepTimer);}
+  function formatLot(raw){if(!raw)return'';return String(raw).replace(/\D/g,'').slice(-10);}
+  function monthToNum(m){const ms={jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12',ene:'01',abr:'04',ago:'08',dic:'12'};return ms[m.toLowerCase()]||'00';}
+  function parseDate(raw){
+    if(!raw)return'';
+    const clean=String(raw).replace(/\D/g,'');
+    if(clean.length===8)return clean;
+    const m=String(raw).match(/(\d{1,2})\s*([A-Za-z]{3})\s*(\d{2,4})/);
+    if(m){const day=m[1].padStart(2,'0'),mon=monthToNum(m[2]),yr=m[3].length===2?'20'+m[3]:m[3];return`${yr}${mon}${day}`;}
+    const parts=String(raw).split(/[-\/\.\s]/);
+    if(parts.length===3){const[a,b,c]=parts;if(a.length===4)return`${a}${b.padStart(2,'0')}${c.padStart(2,'0')}`;if(c.length===4)return`${c}${b.padStart(2,'0')}${a.padStart(2,'0')}`;}
+    return clean.slice(0,8);
+  }
+  function renderBarcode(svgId,value){if(!value)return;try{JsBarcode('#'+svgId,value,{format:'CODE128',lineColor:'#000',width:2.5,height:80,displayValue:false,margin:10});}catch(e){}}
+  function updateBarcodes(){
+    const lot=document.getElementById('editLot').value||document.getElementById('valLot').textContent;
+    const exp=document.getElementById('editExp').value||document.getElementById('valExp').textContent;
+    if(lot&&lot!=='—'){renderBarcode('bcLot',lot);document.getElementById('bcLotNum').textContent=lot;}
+    if(exp&&exp!=='—'){renderBarcode('bcExp',exp);document.getElementById('bcExpNum').textContent=exp;}
+  }
+  async function analyzeImage(){
+    if(!currentImage)return;
+    setPreviewState('loading');startSteps();
+    try{
+      const base64=currentImage.split(',')[1];
+      const mimeType=currentImage.split(';')[0].split(':')[1];
+      const prompt=`Analiza esta etiqueta de producto para sistema WMS Blue Yonder. Extrae exactamente:\n1. LOTE: campo LOT/LOTE/BATCH/L: - extrae todos los dígitos numéricos\n2. FECHA VENCIMIENTO: campo VEN/EXP/BB/VENCE - conviértela a YYYYMMDD\n\nResponde SOLO este JSON sin texto extra:\n{"lote_digitos":"solo dígitos del lote","fecha_YYYYMMDD":"fecha en YYYYMMDD 8 dígitos exactos","fecha_raw":"texto original de la fecha","producto":"nombre producto","confianza_lote":0-100,"confianza_fecha":0-100}\n\nSi no encuentras usa null. NO inventes.`;
+      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({contents:[{parts:[{inline_data:{mime_type:mimeType,data:base64}},{text:prompt}]}],generationConfig:{temperature:0.1,maxOutputTokens:512}})
       });
       stopSteps();
-      const data = await res.json();
-      if (data.error) throw new Error(data.error.message);
-      const raw = data.content.find(b=>b.type==='text')?.text||'';
-      const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
-      const lot = formatLot(parsed.lote);
-      const exp = formatDate(parsed.fecha_vencimiento);
-      if (!lot && !exp) throw new Error('No se encontraron datos. Intenta con una foto más clara y cercana a la etiqueta.');
-      document.getElementById('resultProduct').textContent = parsed.producto || 'Producto detectado';
-      document.getElementById('valLot').textContent = lot || '—';
-      document.getElementById('valExp').textContent = exp || '—';
-      document.getElementById('confLot').textContent = (parsed.confianza_lote||0)+'% confianza';
-      document.getElementById('confExp').textContent = (parsed.confianza_vencimiento||0)+'% confianza';
+      const data=await res.json();
+      if(data.error)throw new Error(data.error.message);
+      const raw=data.candidates?.[0]?.content?.parts?.[0]?.text||'';
+      const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+      const lot=formatLot(parsed.lote_digitos);
+      const exp=parsed.fecha_YYYYMMDD?parseDate(parsed.fecha_YYYYMMDD):parseDate(parsed.fecha_raw);
+      if(!lot&&!exp)throw new Error('No se encontraron datos. Intenta con foto más clara y cercana a la etiqueta.');
+      document.getElementById('resultProduct').textContent=parsed.producto||'Producto detectado';
+      document.getElementById('valLot').textContent=lot||'—';
+      document.getElementById('valExp').textContent=exp||'—';
+      document.getElementById('editLot').value=lot||'';
+      document.getElementById('editExp').value=exp||'';
+      document.getElementById('confLot').textContent=(parsed.confianza_lote||0)+'% confianza';
+      document.getElementById('confExp').textContent=(parsed.confianza_fecha||0)+'% confianza';
       showScreen('screenResult');
-      setTimeout(()=>{ document.getElementById('barLot').style.width=(parsed.confianza_lote||0)+'%'; document.getElementById('barExp').style.width=(parsed.confianza_vencimiento||0)+'%'; if(lot){renderBarcode('bcLot',lot);document.getElementById('bcLotNum').textContent=lot;} if(exp){renderBarcode('bcExp',exp);document.getElementById('bcExpNum').textContent=exp;} },150);
-    } catch(err) { stopSteps(); setPreviewState('error'); document.getElementById('errMsg').textContent=err.message; }
+      setTimeout(()=>{
+        document.getElementById('barLot').style.width=(parsed.confianza_lote||0)+'%';
+        document.getElementById('barExp').style.width=(parsed.confianza_fecha||0)+'%';
+        if(lot){renderBarcode('bcLot',lot);document.getElementById('bcLotNum').textContent=lot;}
+        if(exp){renderBarcode('bcExp',exp);document.getElementById('bcExpNum').textContent=exp;}
+      },150);
+    }catch(err){stopSteps();setPreviewState('error');document.getElementById('errMsg').textContent=err.message;}
   }
 </script>
 </body>
