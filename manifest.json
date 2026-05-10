@@ -1,0 +1,19 @@
+{
+  "name": "WMS Captura Inteligente",
+  "short_name": "WMS Captura",
+  "description": "Extrae lote y fecha de vencimiento para Blue Yonder",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f1a",
+  "theme_color": "#0a0f1a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/jvelan12-dotcom/wms-captura/main/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "lang": "es"
+}
