@@ -195,7 +195,7 @@
     document.getElementById('stateLoading').style.display=s==='loading'?'block':'none';
     document.getElementById('stateError').style.display=s==='error'?'block':'none';
   }
-  const STEPS=['Procesando imagen...','Identificando texto en etiqueta...','Extrayendo lote y vencimiento...','Validando datos...'];
+  const STEPS=['Comprimiendo imagen...','Enviando al servidor...','Extrayendo lote y vencimiento...','Validando datos...'];
   let stepTimer=null;
   function startSteps(){let i=0;document.getElementById('loadStep').textContent=STEPS[0];stepTimer=setInterval(()=>{i=(i+1)%STEPS.length;document.getElementById('loadStep').textContent=STEPS[i];},1300);}
   function stopSteps(){clearInterval(stepTimer);}
@@ -210,6 +210,20 @@
     if(parts.length===3){const[a,b,c]=parts;if(a.length===4)return`${a}${b.padStart(2,'0')}${c.padStart(2,'0')}`;if(c.length===4)return`${c}${b.padStart(2,'0')}${a.padStart(2,'0')}`;}
     return clean.slice(0,8);
   }
+  function compressImage(dataUrl,maxWidth,quality){
+    return new Promise(resolve=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement('canvas');
+        let w=img.width,h=img.height;
+        if(w>maxWidth){h=Math.round(h*maxWidth/w);w=maxWidth;}
+        canvas.width=w;canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',quality));
+      };
+      img.src=dataUrl;
+    });
+  }
   function renderBarcode(svgId,value){if(!value)return;try{JsBarcode('#'+svgId,value,{format:'CODE128',lineColor:'#000',width:2.5,height:80,displayValue:false,margin:10});}catch(e){}}
   function updateBarcodes(){
     const lot=document.getElementById('editLot').value;
@@ -221,8 +235,9 @@
     if(!currentImage)return;
     setPreviewState('loading');startSteps();
     try{
-      const base64=currentImage.split(',')[1];
-      const mimeType=currentImage.split(';')[0].split(':')[1];
+      const compressed=await compressImage(currentImage,800,0.7);
+      const base64=compressed.split(',')[1];
+      const mimeType='image/jpeg';
       const res=await fetch('/api/analyze',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
