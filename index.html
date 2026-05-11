@@ -27,8 +27,6 @@
     @keyframes micPulse { 0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,71,87,0.4)} 50%{transform:scale(1.05);box-shadow:0 0 0 10px rgba(255,71,87,0)} }
     .screen { display: none; padding: 16px; padding-bottom: 40px; flex-direction: column; gap: 14px; }
     .screen.active { display: flex; }
-
-    /* HOME */
     .method-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     .method-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 18px 10px; text-align: center; cursor: pointer; transition: all 0.2s; }
     .method-card:active { transform: scale(0.96); }
@@ -36,8 +34,13 @@
     .method-icon { font-size: 32px; margin-bottom: 8px; }
     .method-title { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
     .method-sub { font-size: 10px; color: var(--muted); line-height: 1.3; }
-
-    /* MANUAL / VOZ */
+    .info-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+    .info-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+    .step-item { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .step-item:last-child { border-bottom: none; }
+    .step-num { min-width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-text { font-size: 13px; line-height: 1.4; }
+    .step-text strong { color: var(--accent); }
     .input-section { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
     .input-section-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
     .input-section-title span { color: var(--accent); }
@@ -49,31 +52,23 @@
     .field-input:focus { border-color: var(--accent); }
     .field-input::placeholder { color: var(--border); font-size: 14px; letter-spacing: 0; }
     .field-hint { font-size: 10px; color: var(--muted); margin-top: 4px; }
-    .mic-btn { width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; transition: all 0.2s; background: rgba(255,255,255,0.08); border: 1px solid var(--border); }
+    .mic-btn { width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; background: rgba(255,255,255,0.08); border: 1px solid var(--border); }
     .mic-btn.recording { background: var(--danger); border-color: var(--danger); animation: micPulse 1s infinite; }
     .voice-status { font-size: 11px; color: var(--accent); margin-top: 6px; min-height: 16px; font-family: monospace; }
-
-    /* PREVIEW */
     .preview-img-wrap { position: relative; border-radius: 14px; overflow: hidden; background: #000; }
     .preview-img { width: 100%; max-height: 40vh; object-fit: contain; display: block; }
     .preview-badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent); color: var(--accent); font-size: 9px; padding: 4px 10px; border-radius: 4px; }
     .btn-row { display: flex; gap: 10px; }
     .btn-main { flex: 1; padding: 15px; border: none; border-radius: 14px; cursor: pointer; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-main:active { transform: scale(0.97); }
-    .btn-main:disabled { opacity: .4; }
     .btn-sec { padding: 15px 20px; border: 1px solid var(--border); border-radius: 14px; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; }
     .btn-full { width: 100%; padding: 16px; border: none; border-radius: 14px; cursor: pointer; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
-
-    /* LOADING */
+    .btn-back { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 14px; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; text-align: center; }
     .load-box { text-align: center; padding: 40px 20px; }
     .spinner { width: 50px; height: 50px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
     .load-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
     .load-step { font-size: 12px; color: var(--muted); }
-
-    /* ERROR */
     .err-box { background: rgba(255,71,87,0.08); border: 1px solid rgba(255,71,87,0.25); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: rgba(255,71,87,0.9); display: flex; gap: 10px; }
-
-    /* RESULTADO */
     .result-header { background: linear-gradient(135deg, rgba(0,212,170,0.1), rgba(0,145,255,0.1)); border: 1px solid rgba(0,212,170,0.25); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; }
     .result-icon { font-size: 32px; }
     .result-title { font-size: 15px; font-weight: 700; color: var(--accent); }
@@ -84,8 +79,6 @@
     .field-val { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; font-family: monospace; }
     .field-edit { width: 100%; background: transparent; border: none; border-top: 1px solid var(--border); color: var(--text); font-size: 18px; font-weight: 700; letter-spacing: 2px; outline: none; padding-top: 8px; font-family: monospace; }
     .field-edit-hint { font-size: 10px; color: var(--muted); margin-top: 4px; }
-
-    /* BARCODES */
     .bc-section { border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
     .bc-hdr { background: var(--panel); padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
     .bc-hdr span { color: var(--accent); font-weight: 700; }
@@ -112,12 +105,11 @@
 
 <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
 
-<!-- ══ PANTALLA 1: INICIO ══ -->
+<!-- INICIO -->
 <div class="screen active" id="screenHome">
-  <div style="text-align:center; padding: 10px 0 4px;">
-    <div style="font-size:13px; color:var(--muted);">Elige cómo ingresar los datos</div>
+  <div style="text-align:center;padding:6px 0 2px;">
+    <div style="font-size:13px;color:var(--muted);">Elige cómo ingresar los datos</div>
   </div>
-
   <div class="method-grid">
     <div class="method-card primary" onclick="openCamera()">
       <div class="method-icon">📷</div>
@@ -135,25 +127,15 @@
       <div class="method-sub">Dicta lote y fecha</div>
     </div>
   </div>
-
-  <div style="background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px;">
-    <div style="font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:12px;">¿Cómo funciona?</div>
-    <div style="display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
-      <div style="min-width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">1</div>
-      <div style="font-size:13px;">Elige foto, escritura o voz para capturar <strong style="color:var(--accent)">Lote</strong> y <strong style="color:var(--accent)">Fecha</strong></div>
-    </div>
-    <div style="display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
-      <div style="min-width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">2</div>
-      <div style="font-size:13px;">Revisa y corrige si es necesario</div>
-    </div>
-    <div style="display:flex; align-items:center; gap:12px; padding:8px 0;">
-      <div style="min-width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">3</div>
-      <div style="font-size:13px;">Escanea los códigos de barra en <strong style="color:var(--accent)">Blue Yonder</strong></div>
-    </div>
+  <div class="info-card">
+    <div class="info-title">¿Cómo funciona?</div>
+    <div class="step-item"><div class="step-num">1</div><div class="step-text">Elige foto, escritura o voz para capturar <strong>Lote</strong> y <strong>Fecha</strong></div></div>
+    <div class="step-item"><div class="step-num">2</div><div class="step-text">Revisa y corrige si es necesario</div></div>
+    <div class="step-item"><div class="step-num">3</div><div class="step-text">Escanea los códigos de barra en <strong>Blue Yonder</strong></div></div>
   </div>
 </div>
 
-<!-- ══ PANTALLA 2: FOTO PREVIEW ══ -->
+<!-- FOTO PREVIEW -->
 <div class="screen" id="screenPreview">
   <div class="preview-img-wrap">
     <img class="preview-img" id="previewImg" alt="">
@@ -181,33 +163,26 @@
   </div>
 </div>
 
-<!-- ══ PANTALLA 3: ESCRITURA MANUAL ══ -->
+<!-- ESCRITURA MANUAL -->
 <div class="screen" id="screenManual">
   <div class="input-section">
     <div class="input-section-title"><span>✏️</span> Ingreso Manual</div>
-
     <div class="field-row">
       <div class="field-label">🏷 Número de Lote <span style="color:var(--muted);font-size:9px;">(últimos 10 dígitos)</span></div>
-      <div class="field-input-wrap">
-        <input class="field-input" id="manualLot" type="tel" maxlength="10" placeholder="0000000000" oninput="this.value=this.value.replace(/\D/g,'').slice(-10)">
-      </div>
+      <input class="field-input" id="manualLot" type="tel" maxlength="10" placeholder="0000000000" oninput="this.value=this.value.replace(/\D/g,'').slice(-10)" style="width:100%">
       <div class="field-hint">Solo dígitos · máximo 10</div>
     </div>
-
     <div class="field-row">
       <div class="field-label">📅 Fecha Vencimiento <span style="color:var(--muted);font-size:9px;">(AAAAMMDD)</span></div>
-      <div class="field-input-wrap">
-        <input class="field-input" id="manualExp" type="tel" maxlength="8" placeholder="20261231" oninput="this.value=this.value.replace(/\D/g,'').slice(0,8)">
-      </div>
-      <div class="field-hint">Formato año-mes-día · ej: 20261231</div>
+      <input class="field-input" id="manualExp" type="tel" maxlength="8" placeholder="20261231" oninput="this.value=this.value.replace(/\D/g,'').slice(0,8)" style="width:100%">
+      <div class="field-hint">Año+Mes+Día · ej: 20261231</div>
     </div>
   </div>
-
   <button class="btn-full" onclick="generarDesdeManual()">▮ Generar Códigos de Barra</button>
-  <button class="btn-sec" style="width:100%;text-align:center;" onclick="goHome()">← Volver</button>
+  <button class="btn-back" onclick="goHome()">← Volver</button>
 </div>
 
-<!-- ══ PANTALLA 4: VOZ ══ -->
+<!-- VOZ -->
 <div class="screen" id="screenVoz">
   <div class="input-section">
     <div class="input-section-title"><span>🎤</span> Ingreso por Voz</div>
@@ -215,35 +190,34 @@
     <div class="field-row">
       <div class="field-label">🏷 Número de Lote</div>
       <div class="field-input-wrap">
-        <input class="field-input" id="vozLot" type="tel" maxlength="10" placeholder="—" readonly>
-        <button class="mic-btn" id="micLot" onclick="iniciarVoz('lot')" title="Hablar lote">🎤</button>
+        <input class="field-input" id="vozLot" type="tel" maxlength="10" placeholder="—">
+        <button class="mic-btn" id="micLot" onclick="iniciarVoz('lot')">🎤</button>
       </div>
       <div class="voice-status" id="statusLot"></div>
-      <div class="field-hint">Di los dígitos uno a uno: "cero cero cero cuatro..."</div>
+      <div class="field-hint">Ejemplos: "cero cero cero cuatro" · "triple cero cuatro" · "0 0 0 4 7 2 7 3 8 6"</div>
     </div>
 
     <div class="field-row">
       <div class="field-label">📅 Fecha Vencimiento</div>
       <div class="field-input-wrap">
-        <input class="field-input" id="vozExp" type="tel" maxlength="8" placeholder="—" readonly>
-        <button class="mic-btn" id="micExp" onclick="iniciarVoz('exp')" title="Hablar fecha">🎤</button>
+        <input class="field-input" id="vozExp" type="tel" maxlength="8" placeholder="—">
+        <button class="mic-btn" id="micExp" onclick="iniciarVoz('exp')">🎤</button>
       </div>
       <div class="voice-status" id="statusExp"></div>
       <div class="field-hint">Di: "veintisiete de mayo de dos mil veintiséis"</div>
     </div>
   </div>
-
   <button class="btn-full" onclick="generarDesdeVoz()">▮ Generar Códigos de Barra</button>
-  <button class="btn-sec" style="width:100%;text-align:center;" onclick="goHome()">← Volver</button>
+  <button class="btn-back" onclick="goHome()">← Volver</button>
 </div>
 
-<!-- ══ PANTALLA 5: RESULTADO ══ -->
+<!-- RESULTADO -->
 <div class="screen" id="screenResult">
   <div class="result-header">
     <div class="result-icon">✅</div>
     <div>
       <div class="result-title">Códigos generados</div>
-      <div class="result-sub" id="resultMetodo">Verifica y corrige si es necesario</div>
+      <div class="result-sub" id="resultMetodo">Edita si hay algún error</div>
     </div>
   </div>
 
@@ -251,7 +225,7 @@
     <div class="field-lbl">🏷 Número de Lote</div>
     <div class="field-val" id="valLot">—</div>
     <input class="field-edit" id="editLot" maxlength="10" placeholder="Corregir si es necesario" oninput="this.value=this.value.replace(/\D/g,'').slice(-10);renderBarcodes()">
-    <div class="field-edit-hint">Editable · solo dígitos</div>
+    <div class="field-edit-hint">Editable · solo dígitos · últimos 10</div>
   </div>
 
   <div class="field-card hi">
@@ -290,9 +264,7 @@
 <script>
   let currentImage = null;
   let recognition = null;
-  let recordingField = null;
 
-  // ── Navegación ──────────────────────────────────────
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -305,7 +277,6 @@
     showScreen('screenHome');
   }
 
-  // ── Cámara ──────────────────────────────────────────
   function openCamera() { document.getElementById('cameraInput').click(); }
 
   document.getElementById('cameraInput').addEventListener('change', function(e) {
@@ -322,114 +293,151 @@
   });
 
   function setPreviewState(s) {
-    document.getElementById('stateReady').style.display   = s==='ready'   ? 'block' : 'none';
-    document.getElementById('stateLoading').style.display = s==='loading' ? 'block' : 'none';
-    document.getElementById('stateError').style.display   = s==='error'   ? 'block' : 'none';
+    document.getElementById('stateReady').style.display   = s==='ready'   ? 'block':'none';
+    document.getElementById('stateLoading').style.display = s==='loading' ? 'block':'none';
+    document.getElementById('stateError').style.display   = s==='error'   ? 'block':'none';
   }
 
-  // ── Manual ──────────────────────────────────────────
+  // ── MANUAL ──────────────────────────────────────────
   function generarDesdeManual() {
     const lot = document.getElementById('manualLot').value.trim();
     const exp = document.getElementById('manualExp').value.trim();
     if (!lot && !exp) { alert('Ingresa al menos el lote o la fecha.'); return; }
-    mostrarResultado(lot, exp, 'Ingreso manual');
+    mostrarResultado(lot, exp, 'Escritura manual');
   }
 
-  // ── Voz ─────────────────────────────────────────────
+  // ── VOZ ─────────────────────────────────────────────
   const MESES = {
-    enero:'01', febrero:'02', marzo:'03', abril:'04', mayo:'05', junio:'06',
-    julio:'07', agosto:'08', septiembre:'09', octubre:'10', noviembre:'11', diciembre:'12'
+    enero:'01',febrero:'02',marzo:'03',abril:'04',mayo:'05',junio:'06',
+    julio:'07',agosto:'08',septiembre:'09',octubre:'10',noviembre:'11',diciembre:'12'
   };
 
-  const DIGITOS = {
-    cero:'0', uno:'1', dos:'2', tres:'3', cuatro:'4', cinco:'5',
-    seis:'6', siete:'7', ocho:'8', nueve:'9'
+  // Mapa completo de palabras a dígitos
+  const PALABRAS_DIGITO = {
+    'cero':'0','un':'1','uno':'1','dos':'2','tres':'3','cuatro':'4',
+    'cinco':'5','seis':'6','siete':'7','ocho':'8','nueve':'9',
+    '0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9'
   };
 
-  const NUMEROS = {
-    cero:0, un:1, uno:1, dos:2, tres:3, cuatro:4, cinco:5, seis:6, siete:7, ocho:8, nueve:9,
-    diez:10, once:11, doce:12, trece:13, catorce:14, quince:15, dieciséis:16, diecisiete:17,
-    dieciocho:18, diecinueve:19, veinte:20, veintiuno:21, veintidós:22, veintitrés:23,
-    veinticuatro:24, veinticinco:25, veintiséis:26, veintisiete:27, veintiocho:28, veintinueve:29,
-    treinta:30, 'treinta y uno':31, mil:1000, dos:2, 'dos mil':2000, 'dos mil veinticinco':2025,
-    'dos mil veintiséis':2026, 'dos mil veintisiete':2027, 'dos mil veintiocho':2028,
-    'dos mil veintinueve':2029, 'dos mil treinta':2030
+  // Multiplicadores: "triple cero" = "000", "doble cuatro" = "44"
+  const MULTIPLICADORES = {
+    'doble':2,'triple':3,'cuádruple':4,'cuadruple':4,'quíntuple':5,'quintuple':5
+  };
+
+  function parsearLoteVoz(texto) {
+    texto = texto.toLowerCase().trim();
+
+    // Primero extraer dígitos directos si el reconocedor los transcribió como números
+    // ej: "0 0 0 4 7 2 7 3 8 6" o "0004727386"
+    const soloNums = texto.replace(/[^0-9]/g, '');
+    if (soloNums.length >= 4) return soloNums.slice(-10);
+
+    let resultado = '';
+    const palabras = texto.split(/\s+/);
+    let i = 0;
+
+    while (i < palabras.length) {
+      const p = palabras[i];
+
+      // Multiplicador + dígito: "triple cero", "doble cuatro"
+      if (MULTIPLICADORES[p] && i + 1 < palabras.length) {
+        const cantidad = MULTIPLICADORES[p];
+        const siguiente = palabras[i + 1];
+        const digito = PALABRAS_DIGITO[siguiente];
+        if (digito !== undefined) {
+          resultado += digito.repeat(cantidad);
+          i += 2;
+          continue;
+        }
+      }
+
+      // Dígito normal
+      const digito = PALABRAS_DIGITO[p];
+      if (digito !== undefined) {
+        resultado += digito;
+      }
+
+      i++;
+    }
+
+    return resultado.slice(-10);
+  }
+
+  const NUMEROS_VOZ = {
+    'cero':0,'un':1,'uno':1,'dos':2,'tres':3,'cuatro':4,'cinco':5,'seis':6,'siete':7,'ocho':8,'nueve':9,
+    'diez':10,'once':11,'doce':12,'trece':13,'catorce':14,'quince':15,
+    'dieciséis':16,'dieciseis':16,'diecisiete':17,'dieciocho':18,'diecinueve':19,
+    'veinte':20,'veintiuno':21,'veintidós':22,'veintidos':22,'veintitrés':23,'veintitres':23,
+    'veinticuatro':24,'veinticinco':25,'veintiséis':26,'veintiseis':26,
+    'veintisiete':27,'veintiocho':28,'veintinueve':29,'treinta':30,'treinta y uno':31,
+    'mil':1000,'dos mil':2000,'dos mil veinticinco':2025,'dos mil veintiséis':2026,
+    'dos mil veintiseis':2026,'dos mil veintisiete':2027,'dos mil veintiocho':2028,
+    'dos mil veintinueve':2029,'dos mil treinta':2030,'dos mil treinta y uno':2031
   };
 
   function parsearFechaVoz(texto) {
     texto = texto.toLowerCase().trim();
-    // Patron: "veintisiete de mayo de dos mil veintiseis"
-    const patron = /(\w+)\s+de\s+(\w+)\s+de\s+([\w\s]+)/;
+
+    // Patrón: "veintisiete de mayo de dos mil veintiséis"
+    const patron = /(.+?)\s+de\s+(\w+)\s+de\s+(.+)/;
     const m = texto.match(patron);
     if (m) {
-      const diaStr = m[1].trim();
-      const mesStr = m[2].trim();
+      const diaStr  = m[1].trim();
+      const mesStr  = m[2].trim();
       const anioStr = m[3].trim();
-      const dia = NUMEROS[diaStr] || parseInt(diaStr) || 0;
-      const mes = MESES[mesStr] || '00';
-      const anio = NUMEROS[anioStr] || parseInt(anioStr) || 0;
-      if (dia && mes !== '00' && anio) {
+      const dia  = NUMEROS_VOZ[diaStr]  || parseInt(diaStr)  || 0;
+      const mes  = MESES[mesStr]        || '00';
+      const anio = NUMEROS_VOZ[anioStr] || parseInt(anioStr) || 0;
+      if (dia && mes !== '00' && anio > 2000) {
         return `${anio}${mes}${String(dia).padStart(2,'0')}`;
       }
     }
     return '';
   }
 
-  function parsearLoteVoz(texto) {
-    texto = texto.toLowerCase().trim();
-    let resultado = '';
-    const palabras = texto.split(/\s+/);
-    for (const p of palabras) {
-      if (DIGITOS[p] !== undefined) resultado += DIGITOS[p];
-    }
-    return resultado.slice(-10);
-  }
-
   function iniciarVoz(campo) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert('Tu navegador no soporta reconocimiento de voz. Usa Chrome.');
-      return;
-    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert('Tu navegador no soporta voz. Usa Chrome.'); return; }
 
     if (recognition) { try { recognition.stop(); } catch(e){} }
 
-    recordingField = campo;
-    const micBtn = document.getElementById(campo === 'lot' ? 'micLot' : 'micExp');
-    const statusEl = document.getElementById(campo === 'lot' ? 'statusLot' : 'statusExp');
-    const inputEl = document.getElementById(campo === 'lot' ? 'vozLot' : 'vozExp');
+    const micBtn  = document.getElementById(campo === 'lot' ? 'micLot'   : 'micExp');
+    const statusEl= document.getElementById(campo === 'lot' ? 'statusLot': 'statusExp');
+    const inputEl = document.getElementById(campo === 'lot' ? 'vozLot'   : 'vozExp');
 
     micBtn.classList.add('recording');
     statusEl.textContent = '🔴 Escuchando...';
 
-    recognition = new SpeechRecognition();
+    recognition = new SR();
     recognition.lang = 'es-CO';
     recognition.continuous = false;
     recognition.interimResults = false;
 
     recognition.onresult = (e) => {
       const texto = e.results[0][0].transcript;
-      statusEl.textContent = '✓ Escuché: "' + texto + '"';
       micBtn.classList.remove('recording');
 
       if (campo === 'lot') {
         const lote = parsearLoteVoz(texto);
         inputEl.value = lote;
-        statusEl.textContent = lote ? '✅ Lote: ' + lote : '⚠️ No entendí. Intenta de nuevo.';
+        statusEl.textContent = lote
+          ? `✅ Lote: ${lote}  (dije: "${texto}")`
+          : `⚠️ No entendí "${texto}". Intenta de nuevo.`;
       } else {
         const fecha = parsearFechaVoz(texto);
         inputEl.value = fecha;
-        statusEl.textContent = fecha ? '✅ Fecha: ' + fecha : '⚠️ No entendí. Di: "veintisiete de mayo de dos mil veintiséis"';
+        statusEl.textContent = fecha
+          ? `✅ Fecha: ${fecha}  (dije: "${texto}")`
+          : `⚠️ No entendí "${texto}". Di: "veintisiete de mayo de dos mil veintiséis"`;
       }
     };
 
     recognition.onerror = (e) => {
       micBtn.classList.remove('recording');
-      statusEl.textContent = '⚠️ Error: ' + e.error + '. Intenta de nuevo.';
+      statusEl.textContent = `⚠️ Error: ${e.error}. Intenta de nuevo.`;
     };
 
     recognition.onend = () => { micBtn.classList.remove('recording'); };
-
     recognition.start();
   }
 
@@ -437,77 +445,11 @@
     const lot = document.getElementById('vozLot').value.trim();
     const exp = document.getElementById('vozExp').value.trim();
     if (!lot && !exp) { alert('Dicta al menos el lote o la fecha primero.'); return; }
-    mostrarResultado(lot, exp, 'Ingreso por voz');
+    mostrarResultado(lot, exp, 'Voz');
   }
 
-  // ── Helpers ─────────────────────────────────────────
-  function monthToNum(m) {
-    const ms = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12',ene:'01',abr:'04',ago:'08',dic:'12'};
-    return ms[String(m).toLowerCase()] || '00';
-  }
-
-  function parseDate(raw) {
-    if (!raw) return '';
-    const clean = String(raw).replace(/\D/g,'');
-    if (clean.length === 8) return clean;
-    const m = String(raw).match(/(\d{1,2})\s*([A-Za-z]{3})\s*(\d{2,4})/);
-    if (m) {
-      const day=m[1].padStart(2,'0'), mon=monthToNum(m[2]), yr=m[3].length===2?'20'+m[3]:m[3];
-      return `${yr}${mon}${day}`;
-    }
-    const parts = String(raw).split(/[-\/\.\s]/);
-    if (parts.length===3) {
-      const [a,b,c]=parts;
-      if (a.length===4) return `${a}${b.padStart(2,'0')}${c.padStart(2,'0')}`;
-      if (c.length===4) return `${c}${b.padStart(2,'0')}${a.padStart(2,'0')}`;
-    }
-    return clean.slice(0,8);
-  }
-
-  function compressImage(dataUrl, maxWidth, quality) {
-    return new Promise(resolve => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let w=img.width, h=img.height;
-        if (w>maxWidth) { h=Math.round(h*maxWidth/w); w=maxWidth; }
-        canvas.width=w; canvas.height=h;
-        canvas.getContext('2d').drawImage(img,0,0,w,h);
-        resolve(canvas.toDataURL('image/jpeg', quality));
-      };
-      img.src = dataUrl;
-    });
-  }
-
-  function renderBarcodes() {
-    const lot = document.getElementById('editLot').value;
-    const exp = document.getElementById('editExp').value;
-    if (lot) {
-      try {
-        JsBarcode('#svgLot', lot, { format:'CODE128', lineColor:'#000000', background:'#ffffff', width:2, height:80, displayValue:true, fontSize:14, margin:10, textMargin:6 });
-        document.getElementById('valorLot').textContent = lot;
-      } catch(e) {}
-    }
-    if (exp) {
-      try {
-        JsBarcode('#svgExp', exp, { format:'CODE128', lineColor:'#000000', background:'#ffffff', width:2, height:80, displayValue:true, fontSize:14, margin:10, textMargin:6 });
-        document.getElementById('valorExp').textContent = exp;
-      } catch(e) {}
-    }
-  }
-
-  function mostrarResultado(lot, exp, metodo) {
-    document.getElementById('resultMetodo').textContent = 'Vía: ' + metodo + ' · Editable si hay error';
-    document.getElementById('valLot').textContent = lot || '—';
-    document.getElementById('valExp').textContent = exp || '—';
-    document.getElementById('editLot').value = lot || '';
-    document.getElementById('editExp').value = exp || '';
-    showScreen('screenResult');
-    setTimeout(renderBarcodes, 400);
-  }
-
-  // ── Análisis con IA (foto) ───────────────────────────
-  const STEPS = ['Comprimiendo imagen...','Enviando al servidor...','Extrayendo datos...','Validando...'];
+  // ── ANÁLISIS FOTO ────────────────────────────────────
+  const STEPS = ['Comprimiendo...','Enviando...','Extrayendo datos...','Validando...'];
   let stepTimer = null;
   function startSteps() {
     let i=0;
@@ -516,29 +458,88 @@
   }
   function stopSteps() { clearInterval(stepTimer); }
 
+  function monthToNum(m) {
+    const ms={jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12',ene:'01',abr:'04',ago:'08',dic:'12'};
+    return ms[String(m).toLowerCase()]||'00';
+  }
+
+  function parseDate(raw) {
+    if (!raw) return '';
+    const clean=String(raw).replace(/\D/g,'');
+    if (clean.length===8) return clean;
+    const m=String(raw).match(/(\d{1,2})\s*([A-Za-z]{3})\s*(\d{2,4})/);
+    if (m){const day=m[1].padStart(2,'0'),mon=monthToNum(m[2]),yr=m[3].length===2?'20'+m[3]:m[3];return`${yr}${mon}${day}`;}
+    const parts=String(raw).split(/[-\/\.\s]/);
+    if(parts.length===3){const[a,b,c]=parts;if(a.length===4)return`${a}${b.padStart(2,'0')}${c.padStart(2,'0')}`;if(c.length===4)return`${c}${b.padStart(2,'0')}${a.padStart(2,'0')}`;}
+    return clean.slice(0,8);
+  }
+
+  function compressImage(dataUrl,maxWidth,quality){
+    return new Promise(resolve=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement('canvas');
+        let w=img.width,h=img.height;
+        if(w>maxWidth){h=Math.round(h*maxWidth/w);w=maxWidth;}
+        canvas.width=w;canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',quality));
+      };
+      img.src=dataUrl;
+    });
+  }
+
   async function analyzeImage() {
     if (!currentImage) return;
     setPreviewState('loading'); startSteps();
     try {
-      const compressed = await compressImage(currentImage, 1024, 0.85);
-      const base64 = compressed.split(',')[1];
-      const res = await fetch('/api/analyze', {
+      const compressed=await compressImage(currentImage,1024,0.85);
+      const base64=compressed.split(',')[1];
+      const res=await fetch('/api/analyze',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({image:base64, mimeType:'image/jpeg'})
+        body:JSON.stringify({image:base64,mimeType:'image/jpeg'})
       });
       stopSteps();
-      if (!res.ok) throw new Error('Error servidor: '+res.status);
-      const parsed = await res.json();
-      if (parsed.error) throw new Error(parsed.error);
-      const lot = parsed.lote_digitos ? String(parsed.lote_digitos).replace(/\D/g,'').slice(-10) : '';
-      const exp = parsed.fecha_YYYYMMDD ? parseDate(parsed.fecha_YYYYMMDD) : parseDate(parsed.fecha_raw);
-      if (!lot && !exp) throw new Error('No se encontraron datos. Intenta con foto más clara.');
+      if(!res.ok) throw new Error('Error servidor: '+res.status);
+      const parsed=await res.json();
+      if(parsed.error) throw new Error(parsed.error);
+      const lot=parsed.lote_digitos?String(parsed.lote_digitos).replace(/\D/g,'').slice(-10):'';
+      const exp=parsed.fecha_YYYYMMDD?parseDate(parsed.fecha_YYYYMMDD):parseDate(parsed.fecha_raw);
+      if(!lot&&!exp) throw new Error('No se encontraron datos. Intenta con foto más clara.');
       mostrarResultado(lot, exp, 'Foto IA');
     } catch(err) {
       stopSteps();
       setPreviewState('error');
-      document.getElementById('errMsg').textContent = err.message;
+      document.getElementById('errMsg').textContent=err.message;
+    }
+  }
+
+  // ── RESULTADO Y BARCODES ─────────────────────────────
+  function mostrarResultado(lot, exp, metodo) {
+    document.getElementById('resultMetodo').textContent = 'Vía: '+metodo+' · Edita si hay error';
+    document.getElementById('valLot').textContent = lot || '—';
+    document.getElementById('valExp').textContent = exp || '—';
+    document.getElementById('editLot').value = lot || '';
+    document.getElementById('editExp').value = exp || '';
+    showScreen('screenResult');
+    setTimeout(renderBarcodes, 400);
+  }
+
+  function renderBarcodes() {
+    const lot=document.getElementById('editLot').value;
+    const exp=document.getElementById('editExp').value;
+    if(lot){
+      try{
+        JsBarcode('#svgLot',lot,{format:'CODE128',lineColor:'#000000',background:'#ffffff',width:2,height:80,displayValue:true,fontSize:14,margin:10,textMargin:6});
+        document.getElementById('valorLot').textContent=lot;
+      }catch(e){}
+    }
+    if(exp){
+      try{
+        JsBarcode('#svgExp',exp,{format:'CODE128',lineColor:'#000000',background:'#ffffff',width:2,height:80,displayValue:true,fontSize:14,margin:10,textMargin:6});
+        document.getElementById('valorExp').textContent=exp;
+      }catch(e){}
     }
   }
 </script>
