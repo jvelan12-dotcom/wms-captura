@@ -12,9 +12,9 @@
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --bg: #0a0f1a; --panel: #111827; --border: #1e2d45; --accent: #00d4aa; --accent2: #0091ff; --danger: #ff4757; --text: #e2e8f0; --muted: #64748b; }
-    html, body { height: 100%; overflow: hidden; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; }
+    :root { --bg: #0a0f1a; --panel: #111827; --border: #1e2d45; --accent: #00d4aa; --accent2: #0091ff; --text: #e2e8f0; --muted: #64748b; }
+    html, body { height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; overflow: hidden; }
     .hdr { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top)); background: rgba(10,15,26,0.98); border-bottom: 1px solid var(--border); }
     .logo { display: flex; align-items: center; gap: 10px; }
     .logo-box { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 18px; }
@@ -24,10 +24,10 @@
     .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .screen { display: none; flex: 1; overflow-y: auto; padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom)); flex-direction: column; gap: 14px; }
+    .screen { display: none; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; padding-bottom: calc(80px + env(safe-area-inset-bottom)); flex-direction: column; gap: 14px; }
     .screen.active { display: flex; }
     .capture-hero { background: linear-gradient(135deg, rgba(0,212,170,0.08), rgba(0,145,255,0.08)); border: 1px solid rgba(0,212,170,0.2); border-radius: 20px; padding: 28px 20px; text-align: center; }
-    .hero-icon { font-size: 56px; margin-bottom: 12px; }
+    .hero-icon { font-size: 48px; margin-bottom: 10px; }
     .hero-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
     .hero-sub { font-size: 13px; color: var(--muted); line-height: 1.5; }
     .steps-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
@@ -40,12 +40,11 @@
     .btn-camera { width: 100%; padding: 18px; border: none; border-radius: 16px; cursor: pointer; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 30px rgba(0,212,170,0.3); }
     .btn-camera:active { transform: scale(0.97); }
     .preview-img-wrap { position: relative; border-radius: 14px; overflow: hidden; background: #000; }
-    .preview-img { width: 100%; max-height: 45vh; object-fit: contain; display: block; }
+    .preview-img { width: 100%; max-height: 40vh; object-fit: contain; display: block; }
     .preview-badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent); color: var(--accent); font-size: 9px; letter-spacing: 1px; padding: 4px 10px; border-radius: 4px; }
     .btn-row { display: flex; gap: 10px; }
     .btn-main { flex: 1; padding: 15px; border: none; border-radius: 14px; cursor: pointer; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-main:active { transform: scale(0.97); }
-    .btn-main:disabled { opacity: .4; cursor: not-allowed; }
     .btn-sec { padding: 15px 20px; border: 1px solid var(--border); border-radius: 14px; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; }
     .load-box { text-align: center; padding: 40px 20px; }
     .spinner { width: 50px; height: 50px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
@@ -60,32 +59,23 @@
     .field-card.hi { border-color: var(--accent); background: rgba(0,212,170,0.04); }
     .field-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .field-lbl { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
-    .field-conf { font-size: 10px; color: var(--accent); }
     .field-val { font-size: 26px; font-weight: 700; letter-spacing: 2px; }
     .field-edit { width: 100%; background: transparent; border: none; border-top: 1px solid var(--border); color: var(--text); font-size: 18px; font-weight: 700; letter-spacing: 2px; outline: none; margin-top: 8px; padding-top: 8px; font-family: inherit; }
     .field-hint { font-size: 10px; color: var(--muted); margin-top: 4px; }
-    .conf-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 10px; overflow: hidden; }
-    .conf-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.9s ease; }
+    /* BARCODES - fondo blanco garantizado */
     .bc-section { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
     .bc-section-hdr { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
     .bc-section-hdr span { color: var(--accent); font-weight: 600; }
     .bc-item { padding: 16px; border-bottom: 1px solid var(--border); }
     .bc-item:last-child { border-bottom: none; }
-    .bc-item-lbl { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .bc-tag { background: rgba(0,212,170,0.12); color: var(--accent); padding: 2px 8px; border-radius: 4px; font-size: 9px; }
-    .bc-wrap { background: #fff; border-radius: 10px; padding: 12px; }
-    .bc-wrap svg { width: 100%; height: auto; }
-    .bc-num { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: 2px; margin-top: 8px; text-align: center; }
+    .bc-item-lbl { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .bc-tag { background: rgba(0,212,170,0.12); color: var(--accent); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+    .bc-canvas-wrap { background: #ffffff; border-radius: 10px; padding: 14px; display: flex; align-items: center; justify-content: center; min-height: 100px; }
+    .bc-canvas-wrap canvas { max-width: 100%; }
+    .bc-num { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: 2px; margin-top: 10px; text-align: center; font-family: monospace; }
     .scan-tip { background: rgba(0,212,170,0.06); border: 1px solid rgba(0,212,170,0.15); border-radius: 12px; padding: 12px 14px; font-size: 12px; color: var(--muted); display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; }
     .scan-tip strong { color: var(--accent); }
     .btn-new { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--panel); color: var(--text); font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
-    .install-banner { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: var(--panel); border-top: 1px solid var(--accent); padding: 14px 16px; padding-bottom: calc(14px + env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 12px; }
-    .install-banner.hidden { display: none; }
-    .install-txt { flex: 1; font-size: 13px; }
-    .install-txt strong { color: var(--accent); display: block; margin-bottom: 2px; }
-    .install-txt span { font-size: 11px; color: var(--muted); }
-    .btn-install { padding: 10px 16px; border-radius: 10px; border: none; cursor: pointer; background: var(--accent); color: #000; font-weight: 700; font-size: 13px; white-space: nowrap; }
-    .btn-dismiss { background: transparent; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 4px; }
   </style>
 </head>
 <body>
@@ -97,20 +87,24 @@
   <div class="pill"><div class="dot"></div> ACTIVO</div>
 </header>
 <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
+
+<!-- PANTALLA 1: INICIO -->
 <div class="screen active" id="screenHome">
   <div class="capture-hero">
     <div class="hero-icon">📷</div>
     <div class="hero-title">Captura Inteligente</div>
-    <div class="hero-sub">Fotografía la etiqueta del producto y la IA extrae automáticamente el lote y la fecha de vencimiento</div>
+    <div class="hero-sub">Fotografía la etiqueta y la IA extrae el lote y la fecha de vencimiento automáticamente</div>
   </div>
   <div class="steps-card">
     <div class="steps-title">¿Cómo funciona?</div>
-    <div class="step-item"><div class="step-num">1</div><div class="step-text">Toma foto de la etiqueta al momento de la recepción</div></div>
-    <div class="step-item"><div class="step-num">2</div><div class="step-text">La IA extrae el <strong>Lote</strong> (últimos 10 dígitos) y <strong>Fecha Venc.</strong> (AAAAMMDD)</div></div>
-    <div class="step-item"><div class="step-num">3</div><div class="step-text">Escanea los códigos generados directamente en <strong>Blue Yonder</strong></div></div>
+    <div class="step-item"><div class="step-num">1</div><div class="step-text">Toma foto clara y cercana de la etiqueta</div></div>
+    <div class="step-item"><div class="step-num">2</div><div class="step-text">La IA extrae el <strong>Lote</strong> y la <strong>Fecha de Vencimiento</strong></div></div>
+    <div class="step-item"><div class="step-num">3</div><div class="step-text">Escanea los códigos de barra en <strong>Blue Yonder</strong></div></div>
   </div>
   <button class="btn-camera" onclick="openCamera()"><span style="font-size:22px">📷</span> Tomar Foto de Etiqueta</button>
 </div>
+
+<!-- PANTALLA 2: PREVIEW -->
 <div class="screen" id="screenPreview">
   <div class="preview-img-wrap">
     <img class="preview-img" id="previewImg" alt="">
@@ -123,7 +117,11 @@
     </div>
   </div>
   <div id="stateLoading" style="display:none">
-    <div class="load-box"><div class="spinner"></div><div class="load-title">Analizando etiqueta...</div><div class="load-step" id="loadStep">Procesando imagen...</div></div>
+    <div class="load-box">
+      <div class="spinner"></div>
+      <div class="load-title">Analizando etiqueta...</div>
+      <div class="load-step" id="loadStep">Procesando imagen...</div>
+    </div>
   </div>
   <div id="stateError" style="display:none">
     <div class="err-box"><span>⚠️</span><span id="errMsg"></span></div>
@@ -133,138 +131,210 @@
     </div>
   </div>
 </div>
+
+<!-- PANTALLA 3: RESULTADO -->
 <div class="screen" id="screenResult">
   <div class="result-header">
     <div class="result-icon">✅</div>
-    <div><div class="result-title">Datos extraídos correctamente</div><div class="result-sub" id="resultProduct">—</div></div>
+    <div>
+      <div class="result-title">Datos extraídos</div>
+      <div class="result-sub">Verifica y corrige si es necesario</div>
+    </div>
   </div>
+
+  <!-- LOTE -->
   <div class="field-card hi">
-    <div class="field-top"><div class="field-lbl">🏷 Número de Lote</div><div class="field-conf" id="confLot"></div></div>
+    <div class="field-top"><div class="field-lbl">🏷 Número de Lote</div></div>
     <div class="field-val" id="valLot">—</div>
-    <input class="field-edit" id="editLot" maxlength="10" placeholder="Corregir si es necesario" oninput="this.value=this.value.replace(/\D/g,'').slice(-10);updateBarcodes()">
-    <div class="field-hint">Solo dígitos · máx 10 · editable</div>
-    <div class="conf-bar"><div class="conf-fill" id="barLot" style="width:0%"></div></div>
+    <input class="field-edit" id="editLot" maxlength="10" placeholder="Corregir si es necesario" oninput="this.value=this.value.replace(/\D/g,'').slice(-10);dibujarCodigos()">
+    <div class="field-hint">Solo dígitos · últimos 10 · editable</div>
   </div>
+
+  <!-- FECHA -->
   <div class="field-card hi">
-    <div class="field-top"><div class="field-lbl">📅 Fecha Vencimiento</div><div class="field-conf" id="confExp"></div></div>
+    <div class="field-top"><div class="field-lbl">📅 Fecha Vencimiento</div></div>
     <div class="field-val" id="valExp">—</div>
-    <input class="field-edit" id="editExp" maxlength="8" placeholder="AAAAMMDD" oninput="this.value=this.value.replace(/\D/g,'').slice(0,8);updateBarcodes()">
+    <input class="field-edit" id="editExp" maxlength="8" placeholder="AAAAMMDD" oninput="this.value=this.value.replace(/\D/g,'').slice(0,8);dibujarCodigos()">
     <div class="field-hint">Formato AAAAMMDD · editable</div>
-    <div class="conf-bar"><div class="conf-fill" id="barExp" style="width:0%"></div></div>
   </div>
+
+  <!-- CODIGOS DE BARRA -->
   <div class="bc-section">
     <div class="bc-section-hdr"><span>▮</span> Escanear en Blue Yonder</div>
+
     <div class="bc-item">
       <div class="bc-item-lbl">Cuando pida <span class="bc-tag">LOTE</span></div>
-      <div class="bc-wrap"><svg id="bcLot"></svg></div>
-      <div class="bc-num" id="bcLotNum"></div>
+      <div class="bc-canvas-wrap" id="wrapLot">
+        <canvas id="canvasLot"></canvas>
+      </div>
+      <div class="bc-num" id="numLot"></div>
     </div>
+
     <div class="bc-item">
       <div class="bc-item-lbl">Cuando pida <span class="bc-tag">FECHA VENCIMIENTO</span></div>
-      <div class="bc-wrap"><svg id="bcExp"></svg></div>
-      <div class="bc-num" id="bcExpNum"></div>
+      <div class="bc-canvas-wrap" id="wrapExp">
+        <canvas id="canvasExp"></canvas>
+      </div>
+      <div class="bc-num" id="numExp"></div>
     </div>
   </div>
-  <div class="scan-tip"><span>💡</span><span>En Blue Yonder, cuando pida el <strong>Lote</strong> escanea el primer código. Cuando pida la <strong>Fecha de Vencimiento</strong> escanea el segundo.</span></div>
+
+  <div class="scan-tip">
+    <span>💡</span>
+    <span>Acerca el lector del dispositivo RF a cada código de barra en pantalla para escanearlo.</span>
+  </div>
+
   <button class="btn-new" onclick="goHome()">📷 Nueva captura</button>
 </div>
-<div class="install-banner hidden" id="installBanner">
-  <div style="font-size:28px">📦</div>
-  <div class="install-txt"><strong>Instalar como App</strong><span>Acceso rápido sin abrir el navegador</span></div>
-  <button class="btn-install" id="btnInstall">Instalar</button>
-  <button class="btn-dismiss" onclick="dismissInstall()">✕</button>
-</div>
+
 <script>
-  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
-  let deferredPrompt=null;
-  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').classList.remove('hidden');});
-  document.getElementById('btnInstall').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;dismissInstall();});
-  function dismissInstall(){document.getElementById('installBanner').classList.add('hidden');}
-  function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
-  function goHome(){currentImage=null;showScreen('screenHome');}
-  let currentImage=null;
-  function openCamera(){document.getElementById('cameraInput').click();}
-  document.getElementById('cameraInput').addEventListener('change',function(e){
-    const file=e.target.files[0];if(!file)return;
-    const reader=new FileReader();
-    reader.onload=ev=>{currentImage=ev.target.result;document.getElementById('previewImg').src=currentImage;setPreviewState('ready');showScreen('screenPreview');};
-    reader.readAsDataURL(file);this.value='';
+  let currentImage = null;
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function goHome() {
+    currentImage = null;
+    showScreen('screenHome');
+  }
+
+  function openCamera() {
+    document.getElementById('cameraInput').click();
+  }
+
+  document.getElementById('cameraInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      currentImage = ev.target.result;
+      document.getElementById('previewImg').src = currentImage;
+      setPreviewState('ready');
+      showScreen('screenPreview');
+    };
+    reader.readAsDataURL(file);
+    this.value = '';
   });
-  function setPreviewState(s){
-    document.getElementById('stateReady').style.display=s==='ready'?'block':'none';
-    document.getElementById('stateLoading').style.display=s==='loading'?'block':'none';
-    document.getElementById('stateError').style.display=s==='error'?'block':'none';
+
+  function setPreviewState(s) {
+    document.getElementById('stateReady').style.display   = s === 'ready'   ? 'block' : 'none';
+    document.getElementById('stateLoading').style.display = s === 'loading' ? 'block' : 'none';
+    document.getElementById('stateError').style.display   = s === 'error'   ? 'block' : 'none';
   }
-  const STEPS=['Comprimiendo imagen...','Enviando al servidor...','Extrayendo lote y vencimiento...','Validando datos...'];
-  let stepTimer=null;
-  function startSteps(){let i=0;document.getElementById('loadStep').textContent=STEPS[0];stepTimer=setInterval(()=>{i=(i+1)%STEPS.length;document.getElementById('loadStep').textContent=STEPS[i];},1300);}
-  function stopSteps(){clearInterval(stepTimer);}
-  function monthToNum(m){const ms={jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12',ene:'01',abr:'04',ago:'08',dic:'12'};return ms[String(m).toLowerCase()]||'00';}
-  function parseDate(raw){
-    if(!raw)return'';
-    const clean=String(raw).replace(/\D/g,'');
-    if(clean.length===8)return clean;
-    const m=String(raw).match(/(\d{1,2})\s*([A-Za-z]{3})\s*(\d{2,4})/);
-    if(m){const day=m[1].padStart(2,'0'),mon=monthToNum(m[2]),yr=m[3].length===2?'20'+m[3]:m[3];return`${yr}${mon}${day}`;}
-    const parts=String(raw).split(/[-\/\.\s]/);
-    if(parts.length===3){const[a,b,c]=parts;if(a.length===4)return`${a}${b.padStart(2,'0')}${c.padStart(2,'0')}`;if(c.length===4)return`${c}${b.padStart(2,'0')}${a.padStart(2,'0')}`;}
-    return clean.slice(0,8);
+
+  const STEPS = ['Comprimiendo imagen...', 'Enviando al servidor...', 'Extrayendo lote y vencimiento...', 'Validando datos...'];
+  let stepTimer = null;
+  function startSteps() {
+    let i = 0;
+    document.getElementById('loadStep').textContent = STEPS[0];
+    stepTimer = setInterval(() => { i = (i+1) % STEPS.length; document.getElementById('loadStep').textContent = STEPS[i]; }, 1300);
   }
-  function compressImage(dataUrl,maxWidth,quality){
-    return new Promise(resolve=>{
-      const img=new Image();
-      img.onload=()=>{
-        const canvas=document.createElement('canvas');
-        let w=img.width,h=img.height;
-        if(w>maxWidth){h=Math.round(h*maxWidth/w);w=maxWidth;}
-        canvas.width=w;canvas.height=h;
-        canvas.getContext('2d').drawImage(img,0,0,w,h);
-        resolve(canvas.toDataURL('image/jpeg',quality));
+  function stopSteps() { clearInterval(stepTimer); }
+
+  function monthToNum(m) {
+    const ms = { jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12',ene:'01',abr:'04',ago:'08',dic:'12' };
+    return ms[String(m).toLowerCase()] || '00';
+  }
+
+  function parseDate(raw) {
+    if (!raw) return '';
+    const clean = String(raw).replace(/\D/g, '');
+    if (clean.length === 8) return clean;
+    const m = String(raw).match(/(\d{1,2})\s*([A-Za-z]{3})\s*(\d{2,4})/);
+    if (m) {
+      const day = m[1].padStart(2,'0'), mon = monthToNum(m[2]), yr = m[3].length === 2 ? '20'+m[3] : m[3];
+      return `${yr}${mon}${day}`;
+    }
+    const parts = String(raw).split(/[-\/\.\s]/);
+    if (parts.length === 3) {
+      const [a,b,c] = parts;
+      if (a.length === 4) return `${a}${b.padStart(2,'0')}${c.padStart(2,'0')}`;
+      if (c.length === 4) return `${c}${b.padStart(2,'0')}${a.padStart(2,'0')}`;
+    }
+    return clean.slice(0, 8);
+  }
+
+  function compressImage(dataUrl, maxWidth, quality) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
       };
-      img.src=dataUrl;
+      img.src = dataUrl;
     });
   }
-  function renderBarcode(svgId,value){if(!value)return;try{JsBarcode('#'+svgId,value,{format:'CODE128',lineColor:'#000',width:2.5,height:80,displayValue:false,margin:10});}catch(e){}}
-  function updateBarcodes(){
-    const lot=document.getElementById('editLot').value;
-    const exp=document.getElementById('editExp').value;
-    if(lot){renderBarcode('bcLot',lot);document.getElementById('bcLotNum').textContent=lot;}
-    if(exp){renderBarcode('bcExp',exp);document.getElementById('bcExpNum').textContent=exp;}
+
+  function dibujarCodigos() {
+    const lot = document.getElementById('editLot').value;
+    const exp = document.getElementById('editExp').value;
+
+    if (lot) {
+      try {
+        JsBarcode('#canvasLot', lot, {
+          format: 'CODE128', lineColor: '#000000', background: '#ffffff',
+          width: 3, height: 100, displayValue: true, fontSize: 16, margin: 12
+        });
+        document.getElementById('numLot').textContent = lot;
+      } catch(e) { console.warn('BC lote:', e); }
+    }
+
+    if (exp) {
+      try {
+        JsBarcode('#canvasExp', exp, {
+          format: 'CODE128', lineColor: '#000000', background: '#ffffff',
+          width: 3, height: 100, displayValue: true, fontSize: 16, margin: 12
+        });
+        document.getElementById('numExp').textContent = exp;
+      } catch(e) { console.warn('BC exp:', e); }
+    }
   }
-  async function analyzeImage(){
-    if(!currentImage)return;
-    setPreviewState('loading');startSteps();
-    try{
-      const compressed=await compressImage(currentImage,800,0.7);
-      const base64=compressed.split(',')[1];
-      const mimeType='image/jpeg';
-      const res=await fetch('/api/analyze',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({image:base64,mimeType:mimeType})
+
+  async function analyzeImage() {
+    if (!currentImage) return;
+    setPreviewState('loading');
+    startSteps();
+    try {
+      const compressed = await compressImage(currentImage, 900, 0.8);
+      const base64 = compressed.split(',')[1];
+
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64, mimeType: 'image/jpeg' })
       });
+
       stopSteps();
-      if(!res.ok)throw new Error('Error del servidor: '+res.status);
-      const parsed=await res.json();
-      if(parsed.error)throw new Error(parsed.error);
-      const lot=parsed.lote_digitos?String(parsed.lote_digitos).replace(/\D/g,'').slice(-10):'';
-      const exp=parsed.fecha_YYYYMMDD?parseDate(parsed.fecha_YYYYMMDD):parseDate(parsed.fecha_raw);
-      if(!lot&&!exp)throw new Error('No se encontraron datos. Intenta con foto más clara y cercana a la etiqueta.');
-      document.getElementById('resultProduct').textContent=parsed.producto||'Producto detectado';
-      document.getElementById('valLot').textContent=lot||'—';
-      document.getElementById('valExp').textContent=exp||'—';
-      document.getElementById('editLot').value=lot||'';
-      document.getElementById('editExp').value=exp||'';
-      document.getElementById('confLot').textContent=(parsed.confianza_lote||0)+'% confianza';
-      document.getElementById('confExp').textContent=(parsed.confianza_fecha||0)+'% confianza';
+      if (!res.ok) throw new Error('Error del servidor: ' + res.status);
+      const parsed = await res.json();
+      if (parsed.error) throw new Error(parsed.error);
+
+      const lot = parsed.lote_digitos ? String(parsed.lote_digitos).replace(/\D/g,'').slice(-10) : '';
+      const exp = parsed.fecha_YYYYMMDD ? parseDate(parsed.fecha_YYYYMMDD) : parseDate(parsed.fecha_raw);
+
+      if (!lot && !exp) throw new Error('No se encontraron datos. Intenta con foto más clara y cercana.');
+
+      document.getElementById('valLot').textContent = lot || '—';
+      document.getElementById('valExp').textContent = exp || '—';
+      document.getElementById('editLot').value = lot || '';
+      document.getElementById('editExp').value = exp || '';
+
       showScreen('screenResult');
-      setTimeout(()=>{
-        document.getElementById('barLot').style.width=(parsed.confianza_lote||0)+'%';
-        document.getElementById('barExp').style.width=(parsed.confianza_fecha||0)+'%';
-        if(lot){renderBarcode('bcLot',lot);document.getElementById('bcLotNum').textContent=lot;}
-        if(exp){renderBarcode('bcExp',exp);document.getElementById('bcExpNum').textContent=exp;}
-      },150);
-    }catch(err){stopSteps();setPreviewState('error');document.getElementById('errMsg').textContent=err.message;}
+
+      setTimeout(() => { dibujarCodigos(); }, 300);
+
+    } catch(err) {
+      stopSteps();
+      setPreviewState('error');
+      document.getElementById('errMsg').textContent = err.message;
+    }
   }
 </script>
 </body>
