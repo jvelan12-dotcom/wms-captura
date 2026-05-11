@@ -13,9 +13,9 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --bg: #0a0f1a; --panel: #111827; --border: #1e2d45; --accent: #00d4aa; --accent2: #0091ff; --text: #e2e8f0; --muted: #64748b; }
-    html, body { height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; overflow: hidden; }
-    .hdr { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top)); background: rgba(10,15,26,0.98); border-bottom: 1px solid var(--border); }
+    html { height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100%; }
+    .hdr { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top)); background: rgba(10,15,26,0.98); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
     .logo { display: flex; align-items: center; gap: 10px; }
     .logo-box { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 18px; }
     .logo-name { font-size: 15px; font-weight: 700; }
@@ -24,7 +24,7 @@
     .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .screen { display: none; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; padding-bottom: calc(80px + env(safe-area-inset-bottom)); flex-direction: column; gap: 14px; }
+    .screen { display: none; padding: 16px; padding-bottom: 40px; flex-direction: column; gap: 14px; }
     .screen.active { display: flex; }
     .capture-hero { background: linear-gradient(135deg, rgba(0,212,170,0.08), rgba(0,145,255,0.08)); border: 1px solid rgba(0,212,170,0.2); border-radius: 20px; padding: 28px 20px; text-align: center; }
     .hero-icon { font-size: 48px; margin-bottom: 10px; }
@@ -33,49 +33,46 @@
     .steps-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
     .steps-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
     .step-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-    .step-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .step-item:last-child { border-bottom: none; }
     .step-num { min-width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .step-text { font-size: 13px; line-height: 1.4; }
     .step-text strong { color: var(--accent); }
     .btn-camera { width: 100%; padding: 18px; border: none; border-radius: 16px; cursor: pointer; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 30px rgba(0,212,170,0.3); }
-    .btn-camera:active { transform: scale(0.97); }
     .preview-img-wrap { position: relative; border-radius: 14px; overflow: hidden; background: #000; }
     .preview-img { width: 100%; max-height: 40vh; object-fit: contain; display: block; }
-    .preview-badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent); color: var(--accent); font-size: 9px; letter-spacing: 1px; padding: 4px 10px; border-radius: 4px; }
+    .preview-badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent); color: var(--accent); font-size: 9px; padding: 4px 10px; border-radius: 4px; }
     .btn-row { display: flex; gap: 10px; }
     .btn-main { flex: 1; padding: 15px; border: none; border-radius: 14px; cursor: pointer; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-main:active { transform: scale(0.97); }
     .btn-sec { padding: 15px 20px; border: 1px solid var(--border); border-radius: 14px; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; }
     .load-box { text-align: center; padding: 40px 20px; }
     .spinner { width: 50px; height: 50px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
     .load-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
     .load-step { font-size: 12px; color: var(--muted); }
-    .err-box { background: rgba(255,71,87,0.08); border: 1px solid rgba(255,71,87,0.25); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: rgba(255,71,87,0.9); display: flex; gap: 10px; align-items: flex-start; }
+    .err-box { background: rgba(255,71,87,0.08); border: 1px solid rgba(255,71,87,0.25); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: rgba(255,71,87,0.9); display: flex; gap: 10px; }
     .result-header { background: linear-gradient(135deg, rgba(0,212,170,0.1), rgba(0,145,255,0.1)); border: 1px solid rgba(0,212,170,0.25); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; }
     .result-icon { font-size: 32px; }
     .result-title { font-size: 15px; font-weight: 700; color: var(--accent); }
     .result-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
     .field-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
     .field-card.hi { border-color: var(--accent); background: rgba(0,212,170,0.04); }
-    .field-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .field-lbl { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
-    .field-val { font-size: 26px; font-weight: 700; letter-spacing: 2px; }
-    .field-edit { width: 100%; background: transparent; border: none; border-top: 1px solid var(--border); color: var(--text); font-size: 18px; font-weight: 700; letter-spacing: 2px; outline: none; margin-top: 8px; padding-top: 8px; font-family: inherit; }
+    .field-lbl { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+    .field-val { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+    .field-edit { width: 100%; background: transparent; border: none; border-top: 1px solid var(--border); color: var(--text); font-size: 18px; font-weight: 700; letter-spacing: 2px; outline: none; padding-top: 8px; font-family: inherit; }
     .field-hint { font-size: 10px; color: var(--muted); margin-top: 4px; }
-    /* BARCODES - fondo blanco garantizado */
-    .bc-section { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-    .bc-section-hdr { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
-    .bc-section-hdr span { color: var(--accent); font-weight: 600; }
-    .bc-item { padding: 16px; border-bottom: 1px solid var(--border); }
+    /* BARCODE */
+    .bc-section { border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+    .bc-hdr { background: var(--panel); padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+    .bc-hdr span { color: var(--accent); font-weight: 700; }
+    .bc-item { background: var(--panel); padding: 16px; border-bottom: 1px solid var(--border); }
     .bc-item:last-child { border-bottom: none; }
-    .bc-item-lbl { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .bc-tag { background: rgba(0,212,170,0.12); color: var(--accent); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-    .bc-canvas-wrap { background: #ffffff; border-radius: 10px; padding: 14px; display: flex; align-items: center; justify-content: center; min-height: 100px; }
-    .bc-canvas-wrap canvas { max-width: 100%; }
-    .bc-num { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: 2px; margin-top: 10px; text-align: center; font-family: monospace; }
-    .scan-tip { background: rgba(0,212,170,0.06); border: 1px solid rgba(0,212,170,0.15); border-radius: 12px; padding: 12px 14px; font-size: 12px; color: var(--muted); display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; }
-    .scan-tip strong { color: var(--accent); }
-    .btn-new { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--panel); color: var(--text); font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+    .bc-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .bc-tag { background: rgba(0,212,170,0.15); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-weight: 700; font-size: 11px; }
+    .bc-svg-wrap { background: #ffffff; border-radius: 10px; padding: 16px 10px; text-align: center; }
+    .bc-svg-wrap svg { width: 100%; max-width: 100%; }
+    .bc-valor { font-size: 15px; font-weight: 700; letter-spacing: 3px; color: var(--text); margin-top: 10px; text-align: center; font-family: monospace; }
+    .tip { background: rgba(0,212,170,0.06); border: 1px solid rgba(0,212,170,0.15); border-radius: 12px; padding: 12px 14px; font-size: 12px; color: var(--muted); display: flex; gap: 8px; line-height: 1.5; }
+    .tip strong { color: var(--accent); }
+    .btn-new { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--panel); color: var(--text); font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin-top: 4px; }
   </style>
 </head>
 <body>
@@ -86,14 +83,15 @@
   </div>
   <div class="pill"><div class="dot"></div> ACTIVO</div>
 </header>
+
 <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
 
-<!-- PANTALLA 1: INICIO -->
+<!-- INICIO -->
 <div class="screen active" id="screenHome">
   <div class="capture-hero">
     <div class="hero-icon">📷</div>
     <div class="hero-title">Captura Inteligente</div>
-    <div class="hero-sub">Fotografía la etiqueta y la IA extrae el lote y la fecha de vencimiento automáticamente</div>
+    <div class="hero-sub">Fotografía la etiqueta y la IA extrae el lote y fecha de vencimiento automáticamente</div>
   </div>
   <div class="steps-card">
     <div class="steps-title">¿Cómo funciona?</div>
@@ -104,7 +102,7 @@
   <button class="btn-camera" onclick="openCamera()"><span style="font-size:22px">📷</span> Tomar Foto de Etiqueta</button>
 </div>
 
-<!-- PANTALLA 2: PREVIEW -->
+<!-- PREVIEW -->
 <div class="screen" id="screenPreview">
   <div class="preview-img-wrap">
     <img class="preview-img" id="previewImg" alt="">
@@ -120,7 +118,7 @@
     <div class="load-box">
       <div class="spinner"></div>
       <div class="load-title">Analizando etiqueta...</div>
-      <div class="load-step" id="loadStep">Procesando imagen...</div>
+      <div class="load-step" id="loadStep">Procesando...</div>
     </div>
   </div>
   <div id="stateError" style="display:none">
@@ -132,7 +130,7 @@
   </div>
 </div>
 
-<!-- PANTALLA 3: RESULTADO -->
+<!-- RESULTADO -->
 <div class="screen" id="screenResult">
   <div class="result-header">
     <div class="result-icon">✅</div>
@@ -142,46 +140,47 @@
     </div>
   </div>
 
-  <!-- LOTE -->
   <div class="field-card hi">
-    <div class="field-top"><div class="field-lbl">🏷 Número de Lote</div></div>
+    <div class="field-lbl">🏷 Número de Lote</div>
     <div class="field-val" id="valLot">—</div>
-    <input class="field-edit" id="editLot" maxlength="10" placeholder="Corregir si es necesario" oninput="this.value=this.value.replace(/\D/g,'').slice(-10);dibujarCodigos()">
+    <input class="field-edit" id="editLot" maxlength="10" placeholder="Corregir si es necesario" oninput="this.value=this.value.replace(/\D/g,'').slice(-10);renderBarcodes()">
     <div class="field-hint">Solo dígitos · últimos 10 · editable</div>
   </div>
 
-  <!-- FECHA -->
   <div class="field-card hi">
-    <div class="field-top"><div class="field-lbl">📅 Fecha Vencimiento</div></div>
+    <div class="field-lbl">📅 Fecha Vencimiento</div>
     <div class="field-val" id="valExp">—</div>
-    <input class="field-edit" id="editExp" maxlength="8" placeholder="AAAAMMDD" oninput="this.value=this.value.replace(/\D/g,'').slice(0,8);dibujarCodigos()">
+    <input class="field-edit" id="editExp" maxlength="8" placeholder="AAAAMMDD" oninput="this.value=this.value.replace(/\D/g,'').slice(0,8);renderBarcodes()">
     <div class="field-hint">Formato AAAAMMDD · editable</div>
   </div>
 
-  <!-- CODIGOS DE BARRA -->
+  <!-- BARCODE LOTE -->
   <div class="bc-section">
-    <div class="bc-section-hdr"><span>▮</span> Escanear en Blue Yonder</div>
-
+    <div class="bc-hdr"><span>▮</span> Código de Barra — LOTE</div>
     <div class="bc-item">
-      <div class="bc-item-lbl">Cuando pida <span class="bc-tag">LOTE</span></div>
-      <div class="bc-canvas-wrap" id="wrapLot">
-        <canvas id="canvasLot"></canvas>
+      <div class="bc-lbl">Escanear cuando Blue Yonder pida <span class="bc-tag">LOTE</span></div>
+      <div class="bc-svg-wrap" id="wrapSvgLot">
+        <svg id="svgLot"></svg>
       </div>
-      <div class="bc-num" id="numLot"></div>
-    </div>
-
-    <div class="bc-item">
-      <div class="bc-item-lbl">Cuando pida <span class="bc-tag">FECHA VENCIMIENTO</span></div>
-      <div class="bc-canvas-wrap" id="wrapExp">
-        <canvas id="canvasExp"></canvas>
-      </div>
-      <div class="bc-num" id="numExp"></div>
+      <div class="bc-valor" id="valorLot"></div>
     </div>
   </div>
 
-  <div class="scan-tip">
+  <!-- BARCODE FECHA -->
+  <div class="bc-section">
+    <div class="bc-hdr"><span>▮</span> Código de Barra — FECHA VENCIMIENTO</div>
+    <div class="bc-item">
+      <div class="bc-lbl">Escanear cuando Blue Yonder pida <span class="bc-tag">FECHA VENCIMIENTO</span></div>
+      <div class="bc-svg-wrap" id="wrapSvgExp">
+        <svg id="svgExp"></svg>
+      </div>
+      <div class="bc-valor" id="valorExp"></div>
+    </div>
+  </div>
+
+  <div class="tip">
     <span>💡</span>
-    <span>Acerca el lector del dispositivo RF a cada código de barra en pantalla para escanearlo.</span>
+    <span>Acerca el lector del dispositivo RF directamente a cada código de barra en pantalla para escanearlo en Blue Yonder.</span>
   </div>
 
   <button class="btn-new" onclick="goHome()">📷 Nueva captura</button>
@@ -196,18 +195,11 @@
     window.scrollTo(0, 0);
   }
 
-  function goHome() {
-    currentImage = null;
-    showScreen('screenHome');
-  }
-
-  function openCamera() {
-    document.getElementById('cameraInput').click();
-  }
+  function goHome() { currentImage = null; showScreen('screenHome'); }
+  function openCamera() { document.getElementById('cameraInput').click(); }
 
   document.getElementById('cameraInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+    const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = ev => {
       currentImage = ev.target.result;
@@ -220,41 +212,41 @@
   });
 
   function setPreviewState(s) {
-    document.getElementById('stateReady').style.display   = s === 'ready'   ? 'block' : 'none';
-    document.getElementById('stateLoading').style.display = s === 'loading' ? 'block' : 'none';
-    document.getElementById('stateError').style.display   = s === 'error'   ? 'block' : 'none';
+    document.getElementById('stateReady').style.display   = s==='ready'   ? 'block' : 'none';
+    document.getElementById('stateLoading').style.display = s==='loading' ? 'block' : 'none';
+    document.getElementById('stateError').style.display   = s==='error'   ? 'block' : 'none';
   }
 
-  const STEPS = ['Comprimiendo imagen...', 'Enviando al servidor...', 'Extrayendo lote y vencimiento...', 'Validando datos...'];
+  const STEPS = ['Comprimiendo imagen...','Enviando al servidor...','Extrayendo datos...','Validando...'];
   let stepTimer = null;
   function startSteps() {
     let i = 0;
     document.getElementById('loadStep').textContent = STEPS[0];
-    stepTimer = setInterval(() => { i = (i+1) % STEPS.length; document.getElementById('loadStep').textContent = STEPS[i]; }, 1300);
+    stepTimer = setInterval(() => { i=(i+1)%STEPS.length; document.getElementById('loadStep').textContent=STEPS[i]; }, 1300);
   }
   function stopSteps() { clearInterval(stepTimer); }
 
   function monthToNum(m) {
-    const ms = { jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12',ene:'01',abr:'04',ago:'08',dic:'12' };
+    const ms = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12',ene:'01',abr:'04',ago:'08',dic:'12'};
     return ms[String(m).toLowerCase()] || '00';
   }
 
   function parseDate(raw) {
     if (!raw) return '';
-    const clean = String(raw).replace(/\D/g, '');
+    const clean = String(raw).replace(/\D/g,'');
     if (clean.length === 8) return clean;
     const m = String(raw).match(/(\d{1,2})\s*([A-Za-z]{3})\s*(\d{2,4})/);
     if (m) {
-      const day = m[1].padStart(2,'0'), mon = monthToNum(m[2]), yr = m[3].length === 2 ? '20'+m[3] : m[3];
+      const day=m[1].padStart(2,'0'), mon=monthToNum(m[2]), yr=m[3].length===2?'20'+m[3]:m[3];
       return `${yr}${mon}${day}`;
     }
     const parts = String(raw).split(/[-\/\.\s]/);
-    if (parts.length === 3) {
-      const [a,b,c] = parts;
-      if (a.length === 4) return `${a}${b.padStart(2,'0')}${c.padStart(2,'0')}`;
-      if (c.length === 4) return `${c}${b.padStart(2,'0')}${a.padStart(2,'0')}`;
+    if (parts.length===3) {
+      const [a,b,c]=parts;
+      if (a.length===4) return `${a}${b.padStart(2,'0')}${c.padStart(2,'0')}`;
+      if (c.length===4) return `${c}${b.padStart(2,'0')}${a.padStart(2,'0')}`;
     }
-    return clean.slice(0, 8);
+    return clean.slice(0,8);
   }
 
   function compressImage(dataUrl, maxWidth, quality) {
@@ -262,64 +254,75 @@
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        let w = img.width, h = img.height;
-        if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        let w=img.width, h=img.height;
+        if (w>maxWidth) { h=Math.round(h*maxWidth/w); w=maxWidth; }
+        canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
         resolve(canvas.toDataURL('image/jpeg', quality));
       };
       img.src = dataUrl;
     });
   }
 
-  function dibujarCodigos() {
+  function renderBarcodes() {
     const lot = document.getElementById('editLot').value;
     const exp = document.getElementById('editExp').value;
 
     if (lot) {
       try {
-        JsBarcode('#canvasLot', lot, {
-          format: 'CODE128', lineColor: '#000000', background: '#ffffff',
-          width: 3, height: 100, displayValue: true, fontSize: 16, margin: 12
+        JsBarcode('#svgLot', lot, {
+          format: 'CODE128',
+          lineColor: '#000000',
+          background: '#ffffff',
+          width: 2,
+          height: 80,
+          displayValue: true,
+          fontSize: 14,
+          margin: 10,
+          textMargin: 6
         });
-        document.getElementById('numLot').textContent = lot;
-      } catch(e) { console.warn('BC lote:', e); }
+        document.getElementById('valorLot').textContent = lot;
+      } catch(e) { console.warn(e); }
     }
 
     if (exp) {
       try {
-        JsBarcode('#canvasExp', exp, {
-          format: 'CODE128', lineColor: '#000000', background: '#ffffff',
-          width: 3, height: 100, displayValue: true, fontSize: 16, margin: 12
+        JsBarcode('#svgExp', exp, {
+          format: 'CODE128',
+          lineColor: '#000000',
+          background: '#ffffff',
+          width: 2,
+          height: 80,
+          displayValue: true,
+          fontSize: 14,
+          margin: 10,
+          textMargin: 6
         });
-        document.getElementById('numExp').textContent = exp;
-      } catch(e) { console.warn('BC exp:', e); }
+        document.getElementById('valorExp').textContent = exp;
+      } catch(e) { console.warn(e); }
     }
   }
 
   async function analyzeImage() {
     if (!currentImage) return;
-    setPreviewState('loading');
-    startSteps();
+    setPreviewState('loading'); startSteps();
     try {
-      const compressed = await compressImage(currentImage, 900, 0.8);
+      const compressed = await compressImage(currentImage, 1024, 0.85);
       const base64 = compressed.split(',')[1];
-
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: base64, mimeType: 'image/jpeg' })
       });
-
       stopSteps();
-      if (!res.ok) throw new Error('Error del servidor: ' + res.status);
+      if (!res.ok) throw new Error('Error servidor: ' + res.status);
       const parsed = await res.json();
       if (parsed.error) throw new Error(parsed.error);
 
       const lot = parsed.lote_digitos ? String(parsed.lote_digitos).replace(/\D/g,'').slice(-10) : '';
       const exp = parsed.fecha_YYYYMMDD ? parseDate(parsed.fecha_YYYYMMDD) : parseDate(parsed.fecha_raw);
 
-      if (!lot && !exp) throw new Error('No se encontraron datos. Intenta con foto más clara y cercana.');
+      if (!lot && !exp) throw new Error('No se encontraron datos. Intenta con foto más clara.');
 
       document.getElementById('valLot').textContent = lot || '—';
       document.getElementById('valExp').textContent = exp || '—';
@@ -327,8 +330,7 @@
       document.getElementById('editExp').value = exp || '';
 
       showScreen('screenResult');
-
-      setTimeout(() => { dibujarCodigos(); }, 300);
+      setTimeout(renderBarcodes, 400);
 
     } catch(err) {
       stopSteps();
