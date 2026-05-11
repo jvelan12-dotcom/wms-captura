@@ -12,7 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --bg: #0a0f1a; --panel: #111827; --border: #1e2d45; --accent: #00d4aa; --accent2: #0091ff; --text: #e2e8f0; --muted: #64748b; }
+    :root { --bg: #0a0f1a; --panel: #111827; --border: #1e2d45; --accent: #00d4aa; --accent2: #0091ff; --text: #e2e8f0; --muted: #64748b; --danger: #ff4757; }
     html { height: 100%; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100%; }
     .hdr { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top)); background: rgba(10,15,26,0.98); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
@@ -24,31 +24,56 @@
     .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
     @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes micPulse { 0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,71,87,0.4)} 50%{transform:scale(1.05);box-shadow:0 0 0 10px rgba(255,71,87,0)} }
     .screen { display: none; padding: 16px; padding-bottom: 40px; flex-direction: column; gap: 14px; }
     .screen.active { display: flex; }
-    .capture-hero { background: linear-gradient(135deg, rgba(0,212,170,0.08), rgba(0,145,255,0.08)); border: 1px solid rgba(0,212,170,0.2); border-radius: 20px; padding: 28px 20px; text-align: center; }
-    .hero-icon { font-size: 48px; margin-bottom: 10px; }
-    .hero-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-    .hero-sub { font-size: 13px; color: var(--muted); line-height: 1.5; }
-    .steps-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-    .steps-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
-    .step-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-    .step-item:last-child { border-bottom: none; }
-    .step-num { min-width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .step-text { font-size: 13px; line-height: 1.4; }
-    .step-text strong { color: var(--accent); }
-    .btn-camera { width: 100%; padding: 18px; border: none; border-radius: 16px; cursor: pointer; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 30px rgba(0,212,170,0.3); }
+
+    /* HOME */
+    .method-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .method-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 18px 10px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .method-card:active { transform: scale(0.96); }
+    .method-card.primary { border-color: var(--accent); background: rgba(0,212,170,0.06); }
+    .method-icon { font-size: 32px; margin-bottom: 8px; }
+    .method-title { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+    .method-sub { font-size: 10px; color: var(--muted); line-height: 1.3; }
+
+    /* MANUAL / VOZ */
+    .input-section { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+    .input-section-title { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .input-section-title span { color: var(--accent); }
+    .field-row { margin-bottom: 16px; }
+    .field-row:last-child { margin-bottom: 0; }
+    .field-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .field-input-wrap { display: flex; gap: 8px; align-items: center; }
+    .field-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 20px; font-weight: 700; letter-spacing: 2px; font-family: monospace; outline: none; }
+    .field-input:focus { border-color: var(--accent); }
+    .field-input::placeholder { color: var(--border); font-size: 14px; letter-spacing: 0; }
+    .field-hint { font-size: 10px; color: var(--muted); margin-top: 4px; }
+    .mic-btn { width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; transition: all 0.2s; background: rgba(255,255,255,0.08); border: 1px solid var(--border); }
+    .mic-btn.recording { background: var(--danger); border-color: var(--danger); animation: micPulse 1s infinite; }
+    .voice-status { font-size: 11px; color: var(--accent); margin-top: 6px; min-height: 16px; font-family: monospace; }
+
+    /* PREVIEW */
     .preview-img-wrap { position: relative; border-radius: 14px; overflow: hidden; background: #000; }
     .preview-img { width: 100%; max-height: 40vh; object-fit: contain; display: block; }
     .preview-badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent); color: var(--accent); font-size: 9px; padding: 4px 10px; border-radius: 4px; }
     .btn-row { display: flex; gap: 10px; }
     .btn-main { flex: 1; padding: 15px; border: none; border-radius: 14px; cursor: pointer; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-main:active { transform: scale(0.97); }
+    .btn-main:disabled { opacity: .4; }
     .btn-sec { padding: 15px 20px; border: 1px solid var(--border); border-radius: 14px; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; }
+    .btn-full { width: 100%; padding: 16px; border: none; border-radius: 14px; cursor: pointer; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+    /* LOADING */
     .load-box { text-align: center; padding: 40px 20px; }
     .spinner { width: 50px; height: 50px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
     .load-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
     .load-step { font-size: 12px; color: var(--muted); }
+
+    /* ERROR */
     .err-box { background: rgba(255,71,87,0.08); border: 1px solid rgba(255,71,87,0.25); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: rgba(255,71,87,0.9); display: flex; gap: 10px; }
+
+    /* RESULTADO */
     .result-header { background: linear-gradient(135deg, rgba(0,212,170,0.1), rgba(0,145,255,0.1)); border: 1px solid rgba(0,212,170,0.25); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; }
     .result-icon { font-size: 32px; }
     .result-title { font-size: 15px; font-weight: 700; color: var(--accent); }
@@ -56,10 +81,11 @@
     .field-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
     .field-card.hi { border-color: var(--accent); background: rgba(0,212,170,0.04); }
     .field-lbl { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-    .field-val { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
-    .field-edit { width: 100%; background: transparent; border: none; border-top: 1px solid var(--border); color: var(--text); font-size: 18px; font-weight: 700; letter-spacing: 2px; outline: none; padding-top: 8px; font-family: inherit; }
-    .field-hint { font-size: 10px; color: var(--muted); margin-top: 4px; }
-    /* BARCODE */
+    .field-val { font-size: 26px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; font-family: monospace; }
+    .field-edit { width: 100%; background: transparent; border: none; border-top: 1px solid var(--border); color: var(--text); font-size: 18px; font-weight: 700; letter-spacing: 2px; outline: none; padding-top: 8px; font-family: monospace; }
+    .field-edit-hint { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+    /* BARCODES */
     .bc-section { border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
     .bc-hdr { background: var(--panel); padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
     .bc-hdr span { color: var(--accent); font-weight: 700; }
@@ -68,11 +94,11 @@
     .bc-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
     .bc-tag { background: rgba(0,212,170,0.15); color: var(--accent); padding: 3px 10px; border-radius: 4px; font-weight: 700; font-size: 11px; }
     .bc-svg-wrap { background: #ffffff; border-radius: 10px; padding: 16px 10px; text-align: center; }
-    .bc-svg-wrap svg { width: 100%; max-width: 100%; }
+    .bc-svg-wrap svg { width: 100%; }
     .bc-valor { font-size: 15px; font-weight: 700; letter-spacing: 3px; color: var(--text); margin-top: 10px; text-align: center; font-family: monospace; }
     .tip { background: rgba(0,212,170,0.06); border: 1px solid rgba(0,212,170,0.15); border-radius: 12px; padding: 12px 14px; font-size: 12px; color: var(--muted); display: flex; gap: 8px; line-height: 1.5; }
     .tip strong { color: var(--accent); }
-    .btn-new { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--panel); color: var(--text); font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin-top: 4px; }
+    .btn-new { width: 100%; padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--panel); color: var(--text); font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -86,23 +112,48 @@
 
 <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
 
-<!-- INICIO -->
+<!-- ══ PANTALLA 1: INICIO ══ -->
 <div class="screen active" id="screenHome">
-  <div class="capture-hero">
-    <div class="hero-icon">📷</div>
-    <div class="hero-title">Captura Inteligente</div>
-    <div class="hero-sub">Fotografía la etiqueta y la IA extrae el lote y fecha de vencimiento automáticamente</div>
+  <div style="text-align:center; padding: 10px 0 4px;">
+    <div style="font-size:13px; color:var(--muted);">Elige cómo ingresar los datos</div>
   </div>
-  <div class="steps-card">
-    <div class="steps-title">¿Cómo funciona?</div>
-    <div class="step-item"><div class="step-num">1</div><div class="step-text">Toma foto clara y cercana de la etiqueta</div></div>
-    <div class="step-item"><div class="step-num">2</div><div class="step-text">La IA extrae el <strong>Lote</strong> y la <strong>Fecha de Vencimiento</strong></div></div>
-    <div class="step-item"><div class="step-num">3</div><div class="step-text">Escanea los códigos de barra en <strong>Blue Yonder</strong></div></div>
+
+  <div class="method-grid">
+    <div class="method-card primary" onclick="openCamera()">
+      <div class="method-icon">📷</div>
+      <div class="method-title">Foto</div>
+      <div class="method-sub">IA extrae automáticamente</div>
+    </div>
+    <div class="method-card" onclick="showScreen('screenManual')">
+      <div class="method-icon">✏️</div>
+      <div class="method-title">Escribir</div>
+      <div class="method-sub">Ingresa los datos a mano</div>
+    </div>
+    <div class="method-card" onclick="showScreen('screenVoz')">
+      <div class="method-icon">🎤</div>
+      <div class="method-title">Voz</div>
+      <div class="method-sub">Dicta lote y fecha</div>
+    </div>
   </div>
-  <button class="btn-camera" onclick="openCamera()"><span style="font-size:22px">📷</span> Tomar Foto de Etiqueta</button>
+
+  <div style="background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px;">
+    <div style="font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:12px;">¿Cómo funciona?</div>
+    <div style="display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+      <div style="min-width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">1</div>
+      <div style="font-size:13px;">Elige foto, escritura o voz para capturar <strong style="color:var(--accent)">Lote</strong> y <strong style="color:var(--accent)">Fecha</strong></div>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+      <div style="min-width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">2</div>
+      <div style="font-size:13px;">Revisa y corrige si es necesario</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; padding:8px 0;">
+      <div style="min-width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">3</div>
+      <div style="font-size:13px;">Escanea los códigos de barra en <strong style="color:var(--accent)">Blue Yonder</strong></div>
+    </div>
+  </div>
 </div>
 
-<!-- PREVIEW -->
+<!-- ══ PANTALLA 2: FOTO PREVIEW ══ -->
 <div class="screen" id="screenPreview">
   <div class="preview-img-wrap">
     <img class="preview-img" id="previewImg" alt="">
@@ -130,13 +181,69 @@
   </div>
 </div>
 
-<!-- RESULTADO -->
+<!-- ══ PANTALLA 3: ESCRITURA MANUAL ══ -->
+<div class="screen" id="screenManual">
+  <div class="input-section">
+    <div class="input-section-title"><span>✏️</span> Ingreso Manual</div>
+
+    <div class="field-row">
+      <div class="field-label">🏷 Número de Lote <span style="color:var(--muted);font-size:9px;">(últimos 10 dígitos)</span></div>
+      <div class="field-input-wrap">
+        <input class="field-input" id="manualLot" type="tel" maxlength="10" placeholder="0000000000" oninput="this.value=this.value.replace(/\D/g,'').slice(-10)">
+      </div>
+      <div class="field-hint">Solo dígitos · máximo 10</div>
+    </div>
+
+    <div class="field-row">
+      <div class="field-label">📅 Fecha Vencimiento <span style="color:var(--muted);font-size:9px;">(AAAAMMDD)</span></div>
+      <div class="field-input-wrap">
+        <input class="field-input" id="manualExp" type="tel" maxlength="8" placeholder="20261231" oninput="this.value=this.value.replace(/\D/g,'').slice(0,8)">
+      </div>
+      <div class="field-hint">Formato año-mes-día · ej: 20261231</div>
+    </div>
+  </div>
+
+  <button class="btn-full" onclick="generarDesdeManual()">▮ Generar Códigos de Barra</button>
+  <button class="btn-sec" style="width:100%;text-align:center;" onclick="goHome()">← Volver</button>
+</div>
+
+<!-- ══ PANTALLA 4: VOZ ══ -->
+<div class="screen" id="screenVoz">
+  <div class="input-section">
+    <div class="input-section-title"><span>🎤</span> Ingreso por Voz</div>
+
+    <div class="field-row">
+      <div class="field-label">🏷 Número de Lote</div>
+      <div class="field-input-wrap">
+        <input class="field-input" id="vozLot" type="tel" maxlength="10" placeholder="—" readonly>
+        <button class="mic-btn" id="micLot" onclick="iniciarVoz('lot')" title="Hablar lote">🎤</button>
+      </div>
+      <div class="voice-status" id="statusLot"></div>
+      <div class="field-hint">Di los dígitos uno a uno: "cero cero cero cuatro..."</div>
+    </div>
+
+    <div class="field-row">
+      <div class="field-label">📅 Fecha Vencimiento</div>
+      <div class="field-input-wrap">
+        <input class="field-input" id="vozExp" type="tel" maxlength="8" placeholder="—" readonly>
+        <button class="mic-btn" id="micExp" onclick="iniciarVoz('exp')" title="Hablar fecha">🎤</button>
+      </div>
+      <div class="voice-status" id="statusExp"></div>
+      <div class="field-hint">Di: "veintisiete de mayo de dos mil veintiséis"</div>
+    </div>
+  </div>
+
+  <button class="btn-full" onclick="generarDesdeVoz()">▮ Generar Códigos de Barra</button>
+  <button class="btn-sec" style="width:100%;text-align:center;" onclick="goHome()">← Volver</button>
+</div>
+
+<!-- ══ PANTALLA 5: RESULTADO ══ -->
 <div class="screen" id="screenResult">
   <div class="result-header">
     <div class="result-icon">✅</div>
     <div>
-      <div class="result-title">Datos extraídos</div>
-      <div class="result-sub">Verifica y corrige si es necesario</div>
+      <div class="result-title">Códigos generados</div>
+      <div class="result-sub" id="resultMetodo">Verifica y corrige si es necesario</div>
     </div>
   </div>
 
@@ -144,58 +251,61 @@
     <div class="field-lbl">🏷 Número de Lote</div>
     <div class="field-val" id="valLot">—</div>
     <input class="field-edit" id="editLot" maxlength="10" placeholder="Corregir si es necesario" oninput="this.value=this.value.replace(/\D/g,'').slice(-10);renderBarcodes()">
-    <div class="field-hint">Solo dígitos · últimos 10 · editable</div>
+    <div class="field-edit-hint">Editable · solo dígitos</div>
   </div>
 
   <div class="field-card hi">
     <div class="field-lbl">📅 Fecha Vencimiento</div>
     <div class="field-val" id="valExp">—</div>
     <input class="field-edit" id="editExp" maxlength="8" placeholder="AAAAMMDD" oninput="this.value=this.value.replace(/\D/g,'').slice(0,8);renderBarcodes()">
-    <div class="field-hint">Formato AAAAMMDD · editable</div>
+    <div class="field-edit-hint">Editable · formato AAAAMMDD</div>
   </div>
 
-  <!-- BARCODE LOTE -->
   <div class="bc-section">
     <div class="bc-hdr"><span>▮</span> Código de Barra — LOTE</div>
     <div class="bc-item">
       <div class="bc-lbl">Escanear cuando Blue Yonder pida <span class="bc-tag">LOTE</span></div>
-      <div class="bc-svg-wrap" id="wrapSvgLot">
-        <svg id="svgLot"></svg>
-      </div>
+      <div class="bc-svg-wrap"><svg id="svgLot"></svg></div>
       <div class="bc-valor" id="valorLot"></div>
     </div>
   </div>
 
-  <!-- BARCODE FECHA -->
   <div class="bc-section">
     <div class="bc-hdr"><span>▮</span> Código de Barra — FECHA VENCIMIENTO</div>
     <div class="bc-item">
       <div class="bc-lbl">Escanear cuando Blue Yonder pida <span class="bc-tag">FECHA VENCIMIENTO</span></div>
-      <div class="bc-svg-wrap" id="wrapSvgExp">
-        <svg id="svgExp"></svg>
-      </div>
+      <div class="bc-svg-wrap"><svg id="svgExp"></svg></div>
       <div class="bc-valor" id="valorExp"></div>
     </div>
   </div>
 
   <div class="tip">
     <span>💡</span>
-    <span>Acerca el lector del dispositivo RF directamente a cada código de barra en pantalla para escanearlo en Blue Yonder.</span>
+    <span>Acerca el lector del dispositivo RF a cada código de barra en pantalla para escanearlo en Blue Yonder.</span>
   </div>
 
-  <button class="btn-new" onclick="goHome()">📷 Nueva captura</button>
+  <button class="btn-new" onclick="goHome()">🏠 Nueva captura</button>
 </div>
 
 <script>
   let currentImage = null;
+  let recognition = null;
+  let recordingField = null;
 
+  // ── Navegación ──────────────────────────────────────
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo(0, 0);
   }
 
-  function goHome() { currentImage = null; showScreen('screenHome'); }
+  function goHome() {
+    currentImage = null;
+    if (recognition) { try { recognition.stop(); } catch(e){} }
+    showScreen('screenHome');
+  }
+
+  // ── Cámara ──────────────────────────────────────────
   function openCamera() { document.getElementById('cameraInput').click(); }
 
   document.getElementById('cameraInput').addEventListener('change', function(e) {
@@ -217,15 +327,120 @@
     document.getElementById('stateError').style.display   = s==='error'   ? 'block' : 'none';
   }
 
-  const STEPS = ['Comprimiendo imagen...','Enviando al servidor...','Extrayendo datos...','Validando...'];
-  let stepTimer = null;
-  function startSteps() {
-    let i = 0;
-    document.getElementById('loadStep').textContent = STEPS[0];
-    stepTimer = setInterval(() => { i=(i+1)%STEPS.length; document.getElementById('loadStep').textContent=STEPS[i]; }, 1300);
+  // ── Manual ──────────────────────────────────────────
+  function generarDesdeManual() {
+    const lot = document.getElementById('manualLot').value.trim();
+    const exp = document.getElementById('manualExp').value.trim();
+    if (!lot && !exp) { alert('Ingresa al menos el lote o la fecha.'); return; }
+    mostrarResultado(lot, exp, 'Ingreso manual');
   }
-  function stopSteps() { clearInterval(stepTimer); }
 
+  // ── Voz ─────────────────────────────────────────────
+  const MESES = {
+    enero:'01', febrero:'02', marzo:'03', abril:'04', mayo:'05', junio:'06',
+    julio:'07', agosto:'08', septiembre:'09', octubre:'10', noviembre:'11', diciembre:'12'
+  };
+
+  const DIGITOS = {
+    cero:'0', uno:'1', dos:'2', tres:'3', cuatro:'4', cinco:'5',
+    seis:'6', siete:'7', ocho:'8', nueve:'9'
+  };
+
+  const NUMEROS = {
+    cero:0, un:1, uno:1, dos:2, tres:3, cuatro:4, cinco:5, seis:6, siete:7, ocho:8, nueve:9,
+    diez:10, once:11, doce:12, trece:13, catorce:14, quince:15, dieciséis:16, diecisiete:17,
+    dieciocho:18, diecinueve:19, veinte:20, veintiuno:21, veintidós:22, veintitrés:23,
+    veinticuatro:24, veinticinco:25, veintiséis:26, veintisiete:27, veintiocho:28, veintinueve:29,
+    treinta:30, 'treinta y uno':31, mil:1000, dos:2, 'dos mil':2000, 'dos mil veinticinco':2025,
+    'dos mil veintiséis':2026, 'dos mil veintisiete':2027, 'dos mil veintiocho':2028,
+    'dos mil veintinueve':2029, 'dos mil treinta':2030
+  };
+
+  function parsearFechaVoz(texto) {
+    texto = texto.toLowerCase().trim();
+    // Patron: "veintisiete de mayo de dos mil veintiseis"
+    const patron = /(\w+)\s+de\s+(\w+)\s+de\s+([\w\s]+)/;
+    const m = texto.match(patron);
+    if (m) {
+      const diaStr = m[1].trim();
+      const mesStr = m[2].trim();
+      const anioStr = m[3].trim();
+      const dia = NUMEROS[diaStr] || parseInt(diaStr) || 0;
+      const mes = MESES[mesStr] || '00';
+      const anio = NUMEROS[anioStr] || parseInt(anioStr) || 0;
+      if (dia && mes !== '00' && anio) {
+        return `${anio}${mes}${String(dia).padStart(2,'0')}`;
+      }
+    }
+    return '';
+  }
+
+  function parsearLoteVoz(texto) {
+    texto = texto.toLowerCase().trim();
+    let resultado = '';
+    const palabras = texto.split(/\s+/);
+    for (const p of palabras) {
+      if (DIGITOS[p] !== undefined) resultado += DIGITOS[p];
+    }
+    return resultado.slice(-10);
+  }
+
+  function iniciarVoz(campo) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Tu navegador no soporta reconocimiento de voz. Usa Chrome.');
+      return;
+    }
+
+    if (recognition) { try { recognition.stop(); } catch(e){} }
+
+    recordingField = campo;
+    const micBtn = document.getElementById(campo === 'lot' ? 'micLot' : 'micExp');
+    const statusEl = document.getElementById(campo === 'lot' ? 'statusLot' : 'statusExp');
+    const inputEl = document.getElementById(campo === 'lot' ? 'vozLot' : 'vozExp');
+
+    micBtn.classList.add('recording');
+    statusEl.textContent = '🔴 Escuchando...';
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'es-CO';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onresult = (e) => {
+      const texto = e.results[0][0].transcript;
+      statusEl.textContent = '✓ Escuché: "' + texto + '"';
+      micBtn.classList.remove('recording');
+
+      if (campo === 'lot') {
+        const lote = parsearLoteVoz(texto);
+        inputEl.value = lote;
+        statusEl.textContent = lote ? '✅ Lote: ' + lote : '⚠️ No entendí. Intenta de nuevo.';
+      } else {
+        const fecha = parsearFechaVoz(texto);
+        inputEl.value = fecha;
+        statusEl.textContent = fecha ? '✅ Fecha: ' + fecha : '⚠️ No entendí. Di: "veintisiete de mayo de dos mil veintiséis"';
+      }
+    };
+
+    recognition.onerror = (e) => {
+      micBtn.classList.remove('recording');
+      statusEl.textContent = '⚠️ Error: ' + e.error + '. Intenta de nuevo.';
+    };
+
+    recognition.onend = () => { micBtn.classList.remove('recording'); };
+
+    recognition.start();
+  }
+
+  function generarDesdeVoz() {
+    const lot = document.getElementById('vozLot').value.trim();
+    const exp = document.getElementById('vozExp').value.trim();
+    if (!lot && !exp) { alert('Dicta al menos el lote o la fecha primero.'); return; }
+    mostrarResultado(lot, exp, 'Ingreso por voz');
+  }
+
+  // ── Helpers ─────────────────────────────────────────
   function monthToNum(m) {
     const ms = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12',ene:'01',abr:'04',ago:'08',dic:'12'};
     return ms[String(m).toLowerCase()] || '00';
@@ -267,41 +482,39 @@
   function renderBarcodes() {
     const lot = document.getElementById('editLot').value;
     const exp = document.getElementById('editExp').value;
-
     if (lot) {
       try {
-        JsBarcode('#svgLot', lot, {
-          format: 'CODE128',
-          lineColor: '#000000',
-          background: '#ffffff',
-          width: 2,
-          height: 80,
-          displayValue: true,
-          fontSize: 14,
-          margin: 10,
-          textMargin: 6
-        });
+        JsBarcode('#svgLot', lot, { format:'CODE128', lineColor:'#000000', background:'#ffffff', width:2, height:80, displayValue:true, fontSize:14, margin:10, textMargin:6 });
         document.getElementById('valorLot').textContent = lot;
-      } catch(e) { console.warn(e); }
+      } catch(e) {}
     }
-
     if (exp) {
       try {
-        JsBarcode('#svgExp', exp, {
-          format: 'CODE128',
-          lineColor: '#000000',
-          background: '#ffffff',
-          width: 2,
-          height: 80,
-          displayValue: true,
-          fontSize: 14,
-          margin: 10,
-          textMargin: 6
-        });
+        JsBarcode('#svgExp', exp, { format:'CODE128', lineColor:'#000000', background:'#ffffff', width:2, height:80, displayValue:true, fontSize:14, margin:10, textMargin:6 });
         document.getElementById('valorExp').textContent = exp;
-      } catch(e) { console.warn(e); }
+      } catch(e) {}
     }
   }
+
+  function mostrarResultado(lot, exp, metodo) {
+    document.getElementById('resultMetodo').textContent = 'Vía: ' + metodo + ' · Editable si hay error';
+    document.getElementById('valLot').textContent = lot || '—';
+    document.getElementById('valExp').textContent = exp || '—';
+    document.getElementById('editLot').value = lot || '';
+    document.getElementById('editExp').value = exp || '';
+    showScreen('screenResult');
+    setTimeout(renderBarcodes, 400);
+  }
+
+  // ── Análisis con IA (foto) ───────────────────────────
+  const STEPS = ['Comprimiendo imagen...','Enviando al servidor...','Extrayendo datos...','Validando...'];
+  let stepTimer = null;
+  function startSteps() {
+    let i=0;
+    document.getElementById('loadStep').textContent=STEPS[0];
+    stepTimer=setInterval(()=>{i=(i+1)%STEPS.length;document.getElementById('loadStep').textContent=STEPS[i];},1300);
+  }
+  function stopSteps() { clearInterval(stepTimer); }
 
   async function analyzeImage() {
     if (!currentImage) return;
@@ -310,28 +523,18 @@
       const compressed = await compressImage(currentImage, 1024, 0.85);
       const base64 = compressed.split(',')[1];
       const res = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64, mimeType: 'image/jpeg' })
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({image:base64, mimeType:'image/jpeg'})
       });
       stopSteps();
-      if (!res.ok) throw new Error('Error servidor: ' + res.status);
+      if (!res.ok) throw new Error('Error servidor: '+res.status);
       const parsed = await res.json();
       if (parsed.error) throw new Error(parsed.error);
-
       const lot = parsed.lote_digitos ? String(parsed.lote_digitos).replace(/\D/g,'').slice(-10) : '';
       const exp = parsed.fecha_YYYYMMDD ? parseDate(parsed.fecha_YYYYMMDD) : parseDate(parsed.fecha_raw);
-
       if (!lot && !exp) throw new Error('No se encontraron datos. Intenta con foto más clara.');
-
-      document.getElementById('valLot').textContent = lot || '—';
-      document.getElementById('valExp').textContent = exp || '—';
-      document.getElementById('editLot').value = lot || '';
-      document.getElementById('editExp').value = exp || '';
-
-      showScreen('screenResult');
-      setTimeout(renderBarcodes, 400);
-
+      mostrarResultado(lot, exp, 'Foto IA');
     } catch(err) {
       stopSteps();
       setPreviewState('error');
